@@ -8,27 +8,35 @@ nav_order: 0
 >
 > You may delete this `attention` box.
 
-# [Project Name]
+# Student-Talent-Matcher
 
-[Project description]
+Der Student Talent Matcher ist eine mobile Anwendung, die Studierende und Absolventen direkt mit einstiegsnahen IT-Positionen (Praktika, Werkstudenten, Junior-Rollen) zusammenbringt. Die Web-App bietet eine klare, datengestützte Analyse der Übereinstimmung zwischen akademischen Fähigkeiten und Jobanforderungen.
 
 ## Team members
 
-### [Jane Dane]
+### Fabian Patzer 
 
 About
 : Some info about Jane
 
 Matr.-Nr.
-: 1234567
+: 77207789039
 
-### [Joe Doe]
+### Yusuf Can Uyar
 
 About
 : Some info about Joe
 
 Matr.-Nr.
 : 1234567
+
+### Erik Wlochal
+
+About
+: Some info about Joe
+
+Matr.-Nr.
+: 77207303365
 
 ## Eidesstattliche Erklärung
 
