@@ -1,5 +1,5 @@
 ---
-title: UI Components
+title: UI Screens
 nav_order: 99
 ---
 Mit KI erstellte Skizzen/Prototypen der angestrebten UI Screens für dieses Projekt 
