@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Swipe - Student Talent Matcher</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Card Stack Positioning */
+        .card-stack {
+            position: relative;
+            height: 600px;
+        }
+        
+        .card-item {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 400px;
+            transition: all 0.3s ease;
+        }
+        
+        /* Stacking effect - cards behind current card */
+        .card-item:nth-child(2) {
+            transform: translateX(-50%) scale(0.95);
+            z-index: 2;
+            opacity: 0.8;
+        }
+        
+        .card-item:nth-child(3) {
+            transform: translateX(-50%) scale(0.9);
+            z-index: 1;
+            opacity: 0.6;
+        }
+        
+        .card-item:nth-child(n+4) {
+            transform: translateX(-50%) scale(0.85);
+            z-index: 0;
+            opacity: 0;
+        }
+        
+        /* Current card - always on top */
+        .card-item:first-child {
+            z-index: 10;
+        }
+        
+        /* Checkbox hack for swipe functionality */
+        .swipe-checkbox {
+            display: none;
+        }
+        
+        /* Hide card when checkbox is checked (swiped) */
+        .swipe-checkbox:checked ~ .card-content {
+            animation: swipeOut 0.5s ease-out forwards;
+            pointer-events: none;
+        }
+        
+        /* Swipe animations */
+        @keyframes swipeOut {
+            to {
+                transform: translateX(200%) rotate(30deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes swipeOutLeft {
+            to {
+                transform: translateX(-200%) rotate(-30deg);
+                opacity: 0;
+            }
+        }
+        
+        .swipe-checkbox.nope:checked ~ .card-content {
+            animation: swipeOutLeft 0.5s ease-out forwards;
+        }
+        
+        /* Button hover effects */
+        .action-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Like/Nope indicators */
+        .indicator {
+            position: absolute;
+            top: 40px;
+            font-size: 3rem;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 20;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+        
+        .like-indicator {
+            right: 20px;
+            color: #22c55e;
+            border: 5px solid #22c55e;
+            transform: rotate(-20deg);
+        }
+        
+        .nope-indicator {
+            left: 20px;
+            color: #ef4444;
+            border: 5px solid #ef4444;
+            transform: rotate(20deg);
+        }
+        
+        /* Show indicator on button hover */
+        .btn-like:hover ~ .card-item:first-child .like-indicator {
+            opacity: 1;
+        }
+        
+        .btn-nope:hover ~ .card-item:first-child .nope-indicator {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">🎓 Student Talent Matcher</h1>
+            <p class="text-gray-600">Wähle passende Talente für dein Unternehmen</p>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="max-w-md mx-auto">
+            {% if students %}
+                <!-- Card Stack Container -->
+                <div class="card-stack mb-8">
+                    {% for student in students %}
+                    <div class="card-item">
+                        <form method="POST" action="{{ url_for('swipe_action', student_id=student.id, action='like') }}">
+                            <input type="checkbox" class="swipe-checkbox" id="swipe-{{ student.id }}" onchange="this.form.submit()">
+                            
+                            <div class="card-content bg-white rounded-3xl shadow-2xl overflow-hidden">
+                                <!-- Like/Nope Indicators -->
+                                <div class="like-indicator">LIKE</div>
+                                <div class="nope-indicator">NOPE</div>
+                                
+                                <!-- Profile Image -->
+                                <div class="relative">
+                                    <img src="{{ student.image }}" 
+                                         alt="{{ student.name }}" 
+                                         class="w-full h-96 object-cover">
+                                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
+                                        <h2 class="text-3xl font-bold mb-1">{{ student.name }}, {{ student.age }}</h2>
+                                        <p class="text-sm opacity-90">{{ student.university }}</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Profile Details -->
+                                <div class="p-6">
+                                    <div class="mb-4">
+                                        <h3 class="font-semibold text-gray-800 mb-2">📚 Studiengang</h3>
+                                        <p class="text-gray-600">{{ student.major }}</p>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <h3 class="font-semibold text-gray-800 mb-2">💼 Bio</h3>
+                                        <p class="text-gray-600">{{ student.bio }}</p>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <h3 class="font-semibold text-gray-800 mb-2">🎯 Skills</h3>
+                                        <div class="flex flex-wrap gap-2">
+                                            {% for skill in student.skills %}
+                                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                                {{ skill }}
+                                            </span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-2 text-gray-600 text-sm">
+                                        <span>📍</span>
+                                        <span>{{ student.location }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex justify-center gap-8 mb-6">
+                    <form method="POST" action="{{ url_for('swipe_action', student_id=students[0].id, action='nope') }}" class="inline">
+                        <button type="submit" class="btn-nope action-btn bg-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center">
+                            <span class="text-4xl text-red-500">✕</span>
+                        </button>
+                    </form>
+                    
+                    <form method="POST" action="{{ url_for('swipe_action', student_id=students[0].id, action='like') }}" class="inline">
+                        <button type="submit" class="btn-like action-btn bg-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center">
+                            <span class="text-4xl text-green-500">♥</span>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Progress Info -->
+                <div class="text-center text-gray-600 text-sm">
+                    <p>Noch {{ students|length }} Kandidat{{ 'en' if students|length != 1 else '' }} verfügbar</p>
+                </div>
+                
+            {% else %}
+                <!-- Empty State -->
+                <div class="text-center py-20">
+                    <div class="text-7xl mb-6">🎉</div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Alle Profile durchgesehen!</h2>
+                    <p class="text-gray-600 mb-8">Du hast alle verfügbaren Kandidaten angesehen.</p>
+                    <a href="{{ url_for('employer_matches') }}" 
+                       class="inline-block bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-4 rounded-full font-semibold hover:shadow-xl transition-shadow">
+                        Zu deinen Matches →
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Navigation -->
+        <div class="max-w-md mx-auto mt-8 flex justify-between">
+            <a href="{{ url_for('employer_filter') }}" 
+               class="text-gray-600 hover:text-gray-800 flex items-center gap-2">
+                <span>←</span>
+                <span>Zurück zum Filter</span>
+            </a>
+            <a href="{{ url_for('employer_matches') }}" 
+               class="text-gray-600 hover:text-gray-800 flex items-center gap-2">
+                <span>Matches</span>
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

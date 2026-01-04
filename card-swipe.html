@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Swipe View - Pure CSS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Hidden Radio Buttons für Card Control */
+        input[type="radio"] {
+            display: none;
+        }
+        
+        /* Card Stack Container */
+        .card-stack {
+            position: relative;
+            height: 600px;
+            perspective: 1000px;
+        }
+        
+        /* Base Card Styling */
+        .card {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 400px;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        /* Card Stack Effect - nachfolgende Karten */
+        .card:nth-of-type(2) {
+            transform: translateX(-50%) scale(0.95);
+            z-index: 4;
+            opacity: 0.9;
+        }
+        
+        .card:nth-of-type(3) {
+            transform: translateX(-50%) scale(0.9);
+            z-index: 3;
+            opacity: 0.7;
+        }
+        
+        .card:nth-of-type(4) {
+            transform: translateX(-50%) scale(0.85);
+            z-index: 2;
+            opacity: 0.5;
+        }
+        
+        .card:nth-of-type(n+5) {
+            transform: translateX(-50%) scale(0.8);
+            z-index: 1;
+            opacity: 0;
+        }
+        
+        /* Aktive Karte immer on top */
+        .card:first-of-type {
+            z-index: 10;
+            transform: translateX(-50%) scale(1);
+        }
+        
+        /* Swipe Right Animation - Checkbox 1 checked */
+        #like-1:checked ~ .card-stack .card:nth-of-type(1) {
+            animation: swipeRight 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        
+        #like-2:checked ~ .card-stack .card:nth-of-type(1) {
+            animation: swipeRight 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        
+        #like-3:checked ~ .card-stack .card:nth-of-type(1) {
+            animation: swipeRight 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        
+        #like-4:checked ~ .card-stack .card:nth-of-type(1) {
+            animation: swipeRight 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        
+        #like-5:checked ~ .card-stack .card:nth-of-type(1) {
+            animation: swipeRight 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        
+        /* Swipe Left Animation - Checkbox 2 checked */
+        #nope-1:checked ~ .card-stack .card:nth-of-type(1) {
+            animation: swipeLeft 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        
+        #nope-2:checked ~ .card-stack .card:nth-of-type(1) {
+            animation: swipeLeft 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        
+        #nope-3:checked ~ .card-stack .card:nth-of-type(1) {
+            animation: swipeLeft 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        
+        #nope-4:checked ~ .card-stack .card:nth-of-type(1) {
+            animation: swipeLeft 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        
+        #nope-5:checked ~ .card-stack .card:nth-of-type(1) {
+            animation: swipeLeft 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        
+        /* Hide cards after animation */
+        #like-1:checked ~ .card-stack .card:nth-of-type(1),
+        #nope-1:checked ~ .card-stack .card:nth-of-type(1) {
+            pointer-events: none;
+        }
+        
+        /* Keyframe Animations */
+        @keyframes swipeRight {
+            0% {
+                transform: translateX(-50%) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100%) rotate(30deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes swipeLeft {
+            0% {
+                transform: translateX(-50%) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-200%) rotate(-30deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Like/Nope Indicators */
+        .indicator {
+            position: absolute;
+            top: 40px;
+            font-size: 3rem;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 20;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+        
+        .like-indicator {
+            right: 20px;
+            color: #22c55e;
+            border: 5px solid #22c55e;
+            transform: rotate(-20deg);
+        }
+        
+        .nope-indicator {
+            left: 20px;
+            color: #ef4444;
+            border: 5px solid #ef4444;
+            transform: rotate(20deg);
+        }
+        
+        /* Show indicators on button hover */
+        .btn-like:hover ~ .card-stack .card:first-of-type .like-indicator {
+            opacity: 1;
+        }
+        
+        .btn-nope:hover ~ .card-stack .card:first-of-type .nope-indicator {
+            opacity: 1;
+        }
+        
+        /* Button Hover Effects */
+        .action-btn {
+            transition: transform 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.15);
+        }
+        
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Counter Animation */
+        .counter {
+            transition: all 0.3s ease;
+        }
+        
+        #like-1:checked ~ .stats .like-counter::after { content: "1"; }
+        #like-2:checked ~ .stats .like-counter::after { content: "2"; }
+        #like-3:checked ~ .stats .like-counter::after { content: "3"; }
+        #like-4:checked ~ .stats .like-counter::after { content: "4"; }
+        #like-5:checked ~ .stats .like-counter::after { content: "5"; }
+        
+        #nope-1:checked ~ .stats .nope-counter::after { content: "1"; }
+        #nope-2:checked ~ .stats .nope-counter::after { content: "2"; }
+        #nope-3:checked ~ .stats .nope-counter::after { content: "3"; }
+        #nope-4:checked ~ .stats .nope-counter::after { content: "4"; }
+        #nope-5:checked ~ .stats .nope-counter::after { content: "5"; }
+        
+        /* Empty State */
+        .empty-state {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        
+        #like-5:checked ~ .empty-state,
+        #nope-5:checked ~ .empty-state {
+            opacity: 1;
+            pointer-events: all;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-100 to-purple-100 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full">
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">💖 Card Swipe</h1>
+            <p class="text-gray-600">Pure CSS - Kein JavaScript!</p>
+        </div>
+        
+        <!-- Hidden Radio Buttons für Swipe Control -->
+        <input type="radio" id="like-1" name="card-1">
+        <input type="radio" id="nope-1" name="card-1">
+        <input type="radio" id="like-2" name="card-2">
+        <input type="radio" id="nope-2" name="card-2">
+        <input type="radio" id="like-3" name="card-3">
+        <input type="radio" id="nope-3" name="card-3">
+        <input type="radio" id="like-4" name="card-4">
+        <input type="radio" id="nope-4" name="card-4">
+        <input type="radio" id="like-5" name="card-5">
+        <input type="radio" id="nope-5" name="card-5">
+        
+        <!-- Card Stack -->
+        <div class="card-stack">
+            <!-- Card 1 -->
+            <div class="card">
+                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                    <div class="like-indicator">LIKE</div>
+                    <div class="nope-indicator">NOPE</div>
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop" alt="Max Müller" class="w-full h-96 object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
+                            <h2 class="text-3xl font-bold mb-1">Max Müller, 24</h2>
+                            <p class="text-sm opacity-90">Student der Informatik 💻</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-4">Loves coding & coffee ☕ | Tech Enthusiast</p>
+                        <div class="flex items-center gap-2 text-gray-600 text-sm">
+                            <span>📍</span>
+                            <span>5 km entfernt</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 2 -->
+            <div class="card">
+                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                    <div class="like-indicator">LIKE</div>
+                    <div class="nope-indicator">NOPE</div>
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=crop" alt="Anna Schmidt" class="w-full h-96 object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
+                            <h2 class="text-3xl font-bold mb-1">Anna Schmidt, 22</h2>
+                            <p class="text-sm opacity-90">Design Enthusiastin 🎨</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-4">Travel lover ✈️ | Creative Mind</p>
+                        <div class="flex items-center gap-2 text-gray-600 text-sm">
+                            <span>📍</span>
+                            <span>3 km entfernt</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 3 -->
+            <div class="card">
+                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                    <div class="like-indicator">LIKE</div>
+                    <div class="nope-indicator">NOPE</div>
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=500&fit=crop" alt="Leon Weber" class="w-full h-96 object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
+                            <h2 class="text-3xl font-bold mb-1">Leon Weber, 25</h2>
+                            <p class="text-sm opacity-90">Fotografie & Musik 📸🎵</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-4">Always exploring | Adventure seeker</p>
+                        <div class="flex items-center gap-2 text-gray-600 text-sm">
+                            <span>📍</span>
+                            <span>8 km entfernt</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 4 -->
+            <div class="card">
+                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                    <div class="like-indicator">LIKE</div>
+                    <div class="nope-indicator">NOPE</div>
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=500&fit=crop" alt="Sophie Fischer" class="w-full h-96 object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
+                            <h2 class="text-3xl font-bold mb-1">Sophie Fischer, 23</h2>
+                            <p class="text-sm opacity-90">Marketing Student 📱</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-4">Fitness & Yoga 🧘‍♀️ | Healthy lifestyle</p>
+                        <div class="flex items-center gap-2 text-gray-600 text-sm">
+                            <span>📍</span>
+                            <span>6 km entfernt</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 5 -->
+            <div class="card">
+                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+                    <div class="like-indicator">LIKE</div>
+                    <div class="nope-indicator">NOPE</div>
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=500&fit=crop" alt="Tom Becker" class="w-full h-96 object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
+                            <h2 class="text-3xl font-bold mb-1">Tom Becker, 26</h2>
+                            <p class="text-sm opacity-90">Entrepreneur 🚀</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-4">Tech & Innovation | Startup lover</p>
+                        <div class="flex items-center gap-2 text-gray-600 text-sm">
+                            <span>📍</span>
+                            <span>4 km entfernt</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex justify-center gap-8 mt-8">
+            <label for="nope-1" class="btn-nope action-btn bg-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center cursor-pointer">
+                <span class="text-4xl text-red-500">✕</span>
+            </label>
+            <label for="like-1" class="btn-like action-btn bg-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center cursor-pointer">
+                <span class="text-4xl text-green-500">♥</span>
+            </label>
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats mt-8 flex justify-center gap-8 text-center">
+            <div>
+                <div class="text-2xl font-bold text-red-500 nope-counter">0</div>
+                <div class="text-sm text-gray-600">Nope</div>
+            </div>
+            <div>
+                <div class="text-2xl font-bold text-green-500 like-counter">0</div>
+                <div class="text-sm text-gray-600">Like</div>
+            </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div class="empty-state text-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div class="bg-white rounded-3xl shadow-2xl p-12">
+                <div class="text-7xl mb-6">🎉</div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Alle Karten durchgesehen!</h2>
+                <p class="text-gray-600 mb-6">100% Pure CSS - Kein JavaScript verwendet!</p>
+                <a href="" class="inline-block bg-gradient-to-r from-pink-500 to-purple-500 text-white px-8 py-4 rounded-full font-semibold hover:shadow-xl transition-shadow">
+                    Seite neu laden
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
