@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome, {{ session['username'] }}!</h1>
+
+    <div class="card">
+        <h3>Your Skills</h3>
+        <p>
+            {% if user.get_skills() %}
+            {{ ', '.join(user.get_skills()) }}
+            {% else %}
+            No skills added yet.
+            {% endif %}
+        </p>
+        <a href="{{ url_for('skills') }}" class="btn">Update Skills</a>
+    </div>
+
+    <h2>Job Matches</h2>
+    {% for item in matches %}
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3>{{ item.job.title }}</h3>
+                <p>{{ item.job.description[:100] }}...</p>
+            </div>
+            <div style="text-align: right;">
+                <div
+                    style="font-size: 1.5rem; font-weight: bold; color: {{ 'var(--success-color)' if item.score >= 50 else 'var(--text-color)' }}">
+                    {{ item.score }}% Match
+                </div>
+                <a href="{{ url_for('job_detail', job_id=item.job.id) }}" class="btn" style="margin-top: 10px;">View
+                    Details</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p>No jobs found.</p>
+    {% endfor %}
+</div>
+{% endblock %}
