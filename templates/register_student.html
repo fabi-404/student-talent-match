@@ -2,11 +2,12 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Registrierung Arbeitgeber</title>
+    <title>Registrierung Student</title>
 </head>
 <body>
-    <h1>Registrierung für Arbeitgeber</h1>
+    <h1>Registrierung für Studenten</h1>
     
+    <!-- Flash Messages Block -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <ul>
@@ -16,8 +17,8 @@
         </ul>
       {% endif %}
     {% endwith %}
-
-    <!-- https://ttl255.com/jinja2-tutorial-part-5-macros/ für jinja2 Macro Erklärung und Tutorial -->
+<!-- End Flash Messages Block -->
+ <!-- https://ttl255.com/jinja2-tutorial-part-5-macros/ für jinja2 Macro Erklärung und Tutorial -->
     <!-- Macro Definition -->
     {% macro render_field(field) %}
       <p>
@@ -33,9 +34,10 @@
     {% endmacro %}
 
     <form method="POST">
-        {{ form.hidden_tag() }}
+        {{ form.hidden_tag() }} <!-- WICHTIG: CSRF Token -->
         
-        {{ render_field(form.company) }}
+        <!-- Nutzung des Macros -->
+        {{ render_field(form.university) }}
         {{ render_field(form.email) }}
         {{ render_field(form.password) }}
         
