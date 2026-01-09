@@ -1,6 +1,9 @@
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, redirect, url_for, render_template, session, flash
+from werkzeug.security import generate_password_hash
+from forms import RegistrationForm
 
 app = Flask(__name__)
+app.secret_key = 'super_secret_key'  # Notwendig für Sessions und Flash-Nachrichten, muss noch erstellt werden todo FP ##
 
 
 
@@ -23,10 +26,24 @@ def register_student():
 
 
 @app.route('/register/employer', methods=['GET', 'POST'])
+## Registrierung von Arbeitgebern mit WTForms.##
 def register_employer():
-    if request.method == 'POST':
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+        company = form.company.data
+
+        # Passwort hashen
+        hashed_pw = generate_password_hash(password)
+
+        # Hier: Logik zum Speichern in der DB ergänzen
+        # database.add_employer(email, hashed_pw, company) -> Beispiel
+
+        flash('Registrierung erfolgreich! Bitte anmelden.', 'success')
         return redirect(url_for('login_employer'))
-    return render_template('register_employer.html')
+    return render_template('register_employer.html', form=form)
+## Python Logik mit Flask sessions für die Registrierung und Anmeldung von Studenten und Arbeitgebern.##
 
 
 
