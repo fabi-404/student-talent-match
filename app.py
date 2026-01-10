@@ -88,9 +88,30 @@ def login_student():
 
 @app.route('/login/employer', methods=['GET', 'POST'])
 def login_employer():
-    if request.method == 'POST':
+    form = LoginForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+
+        # 1. Arbeitgeber aus der Datenbank laden
+        # employer = database.get_employer_by_email(email)
+
+        # ECHTE LOGIK (aktivieren, sobald DB da ist):
+        # if employer and check_password_hash(employer.password_hash, password):
+        #     session['employer_email'] = email
+        #     session['role'] = 'employer'
+        #     flash('Erfolgreich als Arbeitgeber eingeloggt!', 'success')
+        #     return redirect(url_for('employer_filter'))
+        # else:
+        #     flash('E-Mail oder Passwort falsch.', 'error')
+
+        # SIMULATION:
+        session['employer_email'] = email
+        session['role'] = 'employer'
+        flash(f'Willkommen zurück, {email}!', 'success')
         return redirect(url_for('employer_filter'))
-    return render_template('login_employer.html')
+
+    return render_template('login_employer.html', form=form)
 
 
 
