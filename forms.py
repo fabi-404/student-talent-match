@@ -14,3 +14,9 @@ class StudentRegistrationForm(FlaskForm):
     email = StringField('E-Mail', validators=[DataRequired(), Email()])
     password = PasswordField('Passwort', validators=[DataRequired()])
     submit = SubmitField('Registrieren')
+
+## Formular für Login von Studenten und Arbeitgebern mit WTForms.##
+class LoginForm(FlaskForm):
+    email = StringField('E-Mail', validators=[DataRequired(), Email()])
+    password = PasswordField('Passwort', validators=[DataRequired()])
+    submit = SubmitField('Anmelden')

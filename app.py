@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, url_for, render_template, session, flash
-from werkzeug.security import generate_password_hash
-from forms import RegistrationForm, StudentRegistrationForm
+from werkzeug.security import generate_password_hash, check_password_hash
+from forms import RegistrationForm, StudentRegistrationForm, LoginForm
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'  # Notwendig für Sessions und Flash-Nachrichten, muss noch erstellt werden todo FP ##
@@ -60,10 +60,30 @@ def register_employer():
 # Login
 @app.route('/login/student', methods=['GET', 'POST'])
 def login_student():
-    if request.method == 'POST':
-        # später: Prüfung von Nutzerdaten
+    form = LoginForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+
+        # 1. Benutzer aus der Datenbank laden (Beipiel-Code)
+        # user = database.get_student_by_email(email)
+
+        # ECHTE LOGIK (aktivieren, sobald DB da ist):
+        # if user and check_password_hash(user.password_hash, password):
+        #     session['student_id'] = user.id
+        #     session['role'] = 'student'
+        #     flash('Erfolgreich eingeloggt!', 'success')
+        #     return redirect(url_for('student_profile'))
+        # else:
+        #     flash('E-Mail oder Passwort falsch.', 'error')
+
+        # SIMULATION (nur damit du es testen kannst, ohne DB):
+        session['student_email'] = email
+        session['role'] = 'student'
+        flash(f'Willkommen zurück, {email}!', 'success')
         return redirect(url_for('student_profile'))
-    return render_template('login_student.html')
+
+    return render_template('login_student.html', form=form)
 
 
 @app.route('/login/employer', methods=['GET', 'POST'])
