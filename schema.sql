@@ -2,7 +2,7 @@
 
 -- 1. Tabelle: Studenten
 Create Table Student (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT UNIQUE NOT NULL,       
     full_name TEXT NOT NULL,         
     university TEXT NOT NULL,        
@@ -10,21 +10,21 @@ Create Table Student (
     bio TEXT,                         
     is_active INTEGER DEFAULT 1,       --1: sichtbar  0: unsichtbar
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);
 
 -- 2. Tabelle: Arbeitgeber
 Create Table Employer (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT UNIQUE NOT NULL,
     company_name TEXT NOT NULL,
     password_hash TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);
 -- 3. Tabelle: Skills
 Create Table Skill (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL
-)
+);
 -- 4. Tabelle: Studenten-Skills 
 Create Table Student_Skill (
     student_id INT,
@@ -32,11 +32,11 @@ Create Table Student_Skill (
     PRIMARY KEY (student_id, skill_id),
     FOREIGN KEY (student_id) REFERENCES Student(id) ON DELETE CASCADE,
     FOREIGN KEY (skill_id) REFERENCES Skill(id) ON DELETE CASCADE
-)
+);
 
 -- 5. Tabelle: Swipe Logik 
 Create Table Swipe (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     student_id INT,
     employer_id INT,
     direction INTEGER NOT NULL, -- 1: rechts (interessiert), 0: links (nicht interessiert)
@@ -45,7 +45,8 @@ Create Table Swipe (
     UNIQUE(student_id, employer_id),
     FOREIGN KEY (student_id) REFERENCES Student(id) ON DELETE CASCADE,
     FOREIGN KEY (employer_id) REFERENCES Employer(id) ON DELETE CASCADE
-)
+);
+
 -- 6. Matches/Einladung 
 CREATE TABLE IF NOT EXISTS interviews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -54,6 +55,6 @@ CREATE TABLE IF NOT EXISTS interviews (
     message TEXT,
     status TEXT DEFAULT 'pending',
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (employer_id) REFERENCES employers(id) ON DELETE CASCADE,
-    FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE
-)
+    FOREIGN KEY (employer_id) REFERENCES Employer(id) ON DELETE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES Student(id) ON DELETE CASCADE
+);
