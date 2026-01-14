@@ -1,6 +1,7 @@
 from flask import Flask, request, redirect, url_for, render_template, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import RegistrationForm, StudentRegistrationForm, LoginForm
+from database import get_db_connection
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'  # Notwendig für Sessions und Flash-Nachrichten, muss noch erstellt werden todo FP ##
@@ -28,11 +29,14 @@ def register_student():
         hashed_pw = generate_password_hash(password)
 
         # Hier: Logik zum Speichern in der DB ergänzen
+        hashed_pw = generate_password_hash(password)
+     
+        # Hier: Logik zum Speichern in der DB ergänzen
         # database.add_student(email, hashed_pw, university)
-
         flash('Registrierung erfolgreich! Bitte anmelden.', 'success')
         return redirect(url_for('login_student'))
     return render_template('register_student.html', form=form)
+
 
 
 @app.route('/register/employer', methods=['GET', 'POST'])
