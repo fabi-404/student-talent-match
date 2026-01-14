@@ -7,7 +7,7 @@ def get_db_connection():
 
     conn = sqlite3.connect(database)
     conn.row_factory = sqlite3.Row
-    #Aktiviert den Fremdschlüssel für die Beziehung zwischen Tabellen
+    #Aktiviert den Fremdschlüssel für die Beziehung zwischen Tabellen.
     conn.execute('PRAGMA foreign_keys = ON;')
     return conn
 
