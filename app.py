@@ -27,19 +27,33 @@ def register_student():
         university = form.university.data
 
         hashed_pw = generate_password_hash(password)
-
-        # Hier: Logik zum Speichern in der DB ergänzen
-        hashed_pw = generate_password_hash(password)
      
-        # Hier: Logik zum Speichern in der DB ergänzen
-        # database.add_student(email, hashed_pw, university)
-        flash('Registrierung erfolgreich! Bitte anmelden.', 'success')
-        return redirect(url_for('login_student'))
+        # Datenbank-Verbindung über die Funktion aus database.py
+        conn = get_db_connection()
+        try:
+            #schreiben in die Tabelle Student
+            conn.execute( 
+                         "INSERT INTO Student (email, full_name, university,password_hash) VALUES (?,?,?,?)",
+                         (email, email, university, hashed_pw))
+            conn.commit()
+            
+            #Erfolg, User zur Login-Seite weiterleiten
+            flash('Registrierung erfolgreich! Bitte anmelden.', 'success')
+            return redirect(url_for('login_student'))
+        
+        except Exception as e:
+            print(f"KRITISCHER FEHLER: {e}")
+            flash("Fehler bei der Registrierung.")
+        finally:
+            conn.close()
+        
+
     return render_template('register_student.html', form=form)
 
 
 
 @app.route('/register/employer', methods=['GET', 'POST'])
+
 ## Registrierung von Arbeitgebern mit WTForms.##
 def register_employer():
     form = RegistrationForm()
@@ -50,12 +64,23 @@ def register_employer():
 
         # Passwort hashen
         hashed_pw = generate_password_hash(password)
-
-        # Hier: Logik zum Speichern in der DB ergänzen
-        # database.add_employer(email, hashed_pw, company) -> Beispiel
-
-        flash('Registrierung erfolgreich! Bitte anmelden.', 'success')
-        return redirect(url_for('login_employer'))
+        
+        conn = get_db_connection()
+        try:
+            conn.execute(
+                "INSERT INTO Employer (email, company_name, password_hash) VALUES (?,?,?)",
+                (email, company, hashed_pw))
+            
+            conn.commit()
+            
+            flash('Registrierung vom Arbeitgeber erfolgreich! Bitte anmelden.', 'success')
+            return redirect(url_for('login_employer'))
+        
+        except Exception as e:
+            flash("Fehler bei der Registrierung.")
+        finally:
+            conn.close()
+  
     return render_template('register_employer.html', form=form)
 ## Python Logik mit Flask sessions für die Registrierung und Anmeldung von Studenten und Arbeitgebern.##
 
@@ -68,25 +93,27 @@ def login_student():
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
+        
+        conn = get_db_connection()
+        #.fetchone() holt einen einzelnen Datensatz aus der Db.
+        user = conn.execute("SELECT * FROM Student WHERE email = ?", (email,)).fetchone()
+        conn.close()
+        
+        if user and check_password_hash(user['password_hash'], password):
+            
+            session['student_email'] = email
+            session['student_id'] = user['id']
+            session['role'] = 'student'
+            
+            flash('Erfolgreich eingeloggt!', 'success')
+            
+            return redirect(url_for('student_profile'))
+    
+        else:
+            # Falls Student nicht gefunden oder Passwort falsch
+            flash('E-Mail oder Passwort falsch.', 'error')
 
-        # 1. Benutzer aus der Datenbank laden (Beipiel-Code)
-        # user = database.get_student_by_email(email)
-
-        # ECHTE LOGIK (aktivieren, sobald DB da ist):
-        # if user and check_password_hash(user.password_hash, password):
-        #     session['student_id'] = user.id
-        #     session['role'] = 'student'
-        #     flash('Erfolgreich eingeloggt!', 'success')
-        #     return redirect(url_for('student_profile'))
-        # else:
-        #     flash('E-Mail oder Passwort falsch.', 'error')
-
-        # SIMULATION (nur damit du es testen kannst, ohne DB):
-        session['student_email'] = email
-        session['role'] = 'student'
-        flash(f'Willkommen zurück, {email}!', 'success')
-        return redirect(url_for('student_profile'))
-
+        
     return render_template('login_student.html', form=form)
 
 
@@ -97,24 +124,25 @@ def login_employer():
         email = form.email.data
         password = form.password.data
 
-        # 1. Arbeitgeber aus der Datenbank laden
-        # employer = database.get_employer_by_email(email)
-
-        # ECHTE LOGIK (aktivieren, sobald DB da ist):
-        # if employer and check_password_hash(employer.password_hash, password):
-        #     session['employer_email'] = email
-        #     session['role'] = 'employer'
-        #     flash('Erfolgreich als Arbeitgeber eingeloggt!', 'success')
-        #     return redirect(url_for('employer_filter'))
-        # else:
-        #     flash('E-Mail oder Passwort falsch.', 'error')
-
-        # SIMULATION:
-        session['employer_email'] = email
-        session['role'] = 'employer'
-        flash(f'Willkommen zurück, {email}!', 'success')
-        return redirect(url_for('employer_filter'))
-
+        conn = get_db_connection()
+        employer = conn.execute("SELECT * FROM Employer WHERE email = ?", (email,)).fetchone()
+        conn.close()
+        
+        if employer and check_password_hash(employer['password_hash'], password):
+            
+            session['employer_name'] = employer['company_name']
+            session['employer_id'] = employer['id']
+            session['role'] = 'employer'
+            
+            flash('Erfolgreich eingeloggt!', 'success')
+            
+            return redirect(url_for('employer_filter'))
+    
+        else:
+            # Falls Arbeitgeber nicht gefunden oder Passwort falsch
+            flash('E-Mail oder Passwort falsch.', 'error')
+        
+        
     return render_template('login_employer.html', form=form)
 
 
@@ -182,3 +210,5 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return render_template('500.html'), 500
+
+
