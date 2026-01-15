@@ -1,42 +1,21 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Talent Match</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 text-gray-900 font-sans">
+{% extends "base.html" %}
 
-    <nav class="bg-white shadow px-6 py-4 flex justify-between items-center">
-        <a href="/" class="text-2xl font-bold text-blue-600 tracking-tight">TalentMatch</a>
-        <div class="space-x-4">
-            <a href="#" class="text-gray-600 hover:text-blue-600 font-medium">Login</a>
-            <a href="{{ url_for('register_student') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Registrieren</a>
-        </div>
-    </nav>
-
-    <main class="container mx-auto px-6 py-20 text-center">
-        <h1 class="text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
-            Finde dein perfektes <span class="text-blue-600">Match</span>.
-        </h1>
-        <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-            Die Plattform, die Studierende und Unternehmen zusammenbringt. Starte noch heute deine Karriere oder finde junge Talente.
-        </p>
-
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="{{ url_for('register_student') }}" class="px-8 py-4 bg-green-500 text-white font-bold rounded-lg shadow hover:bg-green-600 transition transform hover:-translate-y-1">
-                Für Studenten
-            </a>
-            <a href="{{ url_for('register_employer') }}" class="px-8 py-4 bg-gray-800 text-white font-bold rounded-lg shadow hover:bg-gray-900 transition transform hover:-translate-y-1">
-                Für Unternehmen
-            </a>
-        </div>
-    </main>
-
-    <footer class="bg-white border-t mt-20 py-8 text-center text-gray-500 text-sm">
-        &copy; 2026 Student Talent Match Projekt.
-    </footer>
-
-</body>
-</html>
+{% block content %}
+<div class="text-center py-16">
+    <h1 class="text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">
+        Finde dein perfektes <span class="text-blue-600">Match</span>.
+    </h1>
+    <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+        Die Plattform, die Studierende und Unternehmen verbindet. Simpel. Schnell. Direkt.
+    </p>
+    
+    <div class="flex justify-center gap-4">
+        <a href="{{ url_for('register_student') }}" class="bg-green-500 text-white px-8 py-3 rounded-lg font-bold shadow hover:bg-green-600 transition">
+            Start als Student
+        </a>
+        <a href="{{ url_for('register_employer') }}" class="bg-gray-800 text-white px-8 py-3 rounded-lg font-bold shadow hover:bg-gray-900 transition">
+            Start als Unternehmen
+        </a>
+    </div>
+</div>
+{% endblock %}
