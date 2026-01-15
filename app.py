@@ -2,6 +2,7 @@ from flask import Flask, request, redirect, url_for, render_template, session, f
 from werkzeug.security import generate_password_hash, check_password_hash
 from forms import RegistrationForm, StudentRegistrationForm, LoginForm
 from database import get_db_connection
+import sqlite3
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'  # Notwendig für Sessions und Flash-Nachrichten, muss noch erstellt werden todo FP ##
@@ -145,8 +146,6 @@ def login_employer():
         
     return render_template('login_employer.html', form=form)
 
-
-
 # Student
 
 @app.route('/student/profile', methods=['GET', 'POST'])
@@ -183,8 +182,6 @@ def employer_swipe():
 def swipe_action(student_id, action):
     # später: Swipe speichern
     return redirect(url_for('employer_swipe'))
-
-
 
 # Arbeitgeber: Übersicht
 
