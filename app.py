@@ -3,10 +3,21 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from forms import RegistrationForm, StudentRegistrationForm, LoginForm
 from database import get_db_connection
 import sqlite3
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'  # Notwendig für Sessions und Flash-Nachrichten, muss noch erstellt werden todo FP ##
 
+## Login Sicherheit damit man nur auf bestimmte Seiten zugreifen kann wenn man eingeloggt ist##
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'student_id' not in session and 'employer_id' not in session: ## prüft ob student oder arbeitgeber eingeloggt ist ##
+            flash('Bitte zuerst anmelden um diese Seite zu sehen.', 'warning')
+            return redirect(url_for('index')) ##hier könnte man auch zur login seite weiterleiten ##
+        return f(*args, **kwargs)
+    return decorated_function
 
 # Start
 
@@ -146,6 +157,7 @@ def login_employer():
 # Student
 
 @app.route('/student/profile', methods=['GET', 'POST'])
+@login_required ## login requird decorator##
 def student_profile():
     if request.method == 'POST':
         # später: Profil aktualisieren
@@ -154,6 +166,7 @@ def student_profile():
 
 
 @app.route('/student/matches')
+@login_required ## login requird decorator##
 def student_matches():
     # später: passende Einträge laden
     return render_template('student_matches.html')
@@ -163,6 +176,7 @@ def student_matches():
 # Arbeitgeber: Filter und Swipe
 
 @app.route('/employer/filter', methods=['GET', 'POST'])
+@login_required ## login requird decorator##
 def employer_filter():
     if request.method == 'POST':
         return redirect(url_for('employer_swipe'))
@@ -170,6 +184,7 @@ def employer_filter():
 
 
 @app.route('/employer/swipe')
+@login_required ## login requird decorator##
 def employer_swipe():
     # später: ein Profil auswählen
     return render_template('swipe_view.html')
@@ -183,11 +198,13 @@ def swipe_action(student_id, action):
 # Arbeitgeber: Übersicht
 
 @app.route('/employer/matches')
+@login_required ## login requird decorator##    
 def employer_matches():
     return render_template('employer_matches.html')
 
 
 @app.route('/employer/invite/<int:student_id>', methods=['POST'])
+@login_required ## login requird decorator##
 def send_invite(student_id):
     # später: Einladung hinterlegen
     return redirect(url_for('employer_matches'))
