@@ -12,7 +12,7 @@ app.secret_key = 'super_secret_key'  # Notwendig für Sessions und Flash-Nachric
 
 @app.route('/')
 def landing():
-    return render_template('landing.html')
+    return render_template('frontpage.html')
 
 # Registrierung
 
