@@ -166,10 +166,45 @@ def logout():
 @app.route('/student/profile', methods=['GET', 'POST'])
 @login_required ## login requird decorator##
 def student_profile():
+    student_id = session.get('student_id') ## Hole die student_id aus der Session ##
+
+    conn = get_db_connection() ##DB Verbindung aufbauen##
     if request.method == 'POST':
-        # später: Profil aktualisieren
+        
+        full_name = request.form['full_name']
+        university = request.form['university']
+        bio = request.form['bio']
+
+         # Checkbox für Sichtbarkeit (gibt 'on' zurück, wenn angehakt, sonst None)
+        is_active = 1 if request.form.get('is_active') else 0
+
+        # 2. Update in der Datenbank ausführen
+        try:
+            conn.execute("""
+                UPDATE Student 
+                SET full_name = ?, university = ?, bio = ?, is_active = ?
+                WHERE id = ?
+            """, (full_name, university, bio, is_active, student_id))
+            
+            conn.commit()
+            flash('Profil erfolgreich aktualisiert!', 'success')
+        except Exception as e:
+            print(f"Update Fehler: {e}")
+            flash('Fehler beim Speichern des Profils.', 'error')
+
+         # Seite neu laden (verhindert erneutes Senden bei Refresh)
         return redirect(url_for('student_profile'))
-    return render_template('student_profile.html')
+     # GET-Request: Wir laden die aktuellen Daten, um sie im Formular anzuzeigen
+    student = conn.execute("SELECT * FROM Student WHERE id = ?", (student_id,)).fetchone()
+    conn.close()
+
+    if student is None:
+        flash("Benutzer nicht gefunden.", "error")
+        return redirect(url_for('index'))
+    
+     # Wir übergeben das 'student' Objekt an das Template
+    return render_template('student_profile.html', student=student)
+    
 
 
 @app.route('/student/matches')
