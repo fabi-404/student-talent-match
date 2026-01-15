@@ -8,14 +8,11 @@ app = Flask(__name__)
 app.secret_key = 'super_secret_key'  # Notwendig für Sessions und Flash-Nachrichten, muss noch erstellt werden todo FP ##
 
 
-
 # Start
 
 @app.route('/')
 def landing():
     return render_template('landing.html')
-
-
 
 # Registrierung
 

@@ -1,0 +1,16 @@
+# Python Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python Bytecode (automatisch generiert)
+__pycache__/
+*.pyc
+
+# Mac Systemdateien
+.DS_Store
+
+# Lokale Datenbank (will man meistens nicht im Git haben)
+*.db
+student_talent.db
