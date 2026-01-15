@@ -154,6 +154,13 @@ def login_employer():
         
     return render_template('login_employer.html', form=form)
 
+# Logout
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('Erfolgreich ausgeloggt.', 'success')
+    return redirect(url_for('index'))
+
 # Student
 
 @app.route('/student/profile', methods=['GET', 'POST'])
