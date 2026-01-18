@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">{{ company_name }} Dashboard</h1>
+            <p class="text-gray-600">Verwalte deine Jobs und Kandidaten.</p>
+        </div>
+        <a href="/jobs/create" class="bg-blue-600 text-white px-5 py-3 rounded-lg font-bold shadow hover:bg-blue-700 transition">
+            + Neuen Job posten
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
+            <div class="text-3xl font-bold text-blue-600">{{ stats.active_jobs }}</div>
+            <div class="text-gray-500 text-sm">Aktive Jobs</div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
+            <div class="text-3xl font-bold text-green-500">{{ stats.new_applicants }}</div>
+            <div class="text-gray-500 text-sm">Neue Bewerber</div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
+            <div class="text-3xl font-bold text-purple-500">{{ stats.total_matches }}</div>
+            <div class="text-gray-500 text-sm">Matches Gesamt</div>
+        </div>
+    </div>
+
+    <h2 class="text-xl font-bold text-gray-800 mb-4">Deine Stellenanzeigen</h2>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <table class="min-w-full text-left">
+            <thead class="bg-gray-50 border-b">
+                <tr>
+                    <th class="px-6 py-3 text-gray-500 text-xs font-medium uppercase">Titel & Details</th>
+                    <th class="px-6 py-3 text-gray-500 text-xs font-medium uppercase">Status</th>
+                    <th class="px-6 py-3 text-gray-500 text-xs font-medium uppercase text-right">Aktion</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                
+                {% for job in jobs %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4">
+                        <p class="font-bold text-gray-800">{{ job.title }}</p>
+                        <p class="text-xs text-gray-500">{{ job.location }} • {{ job.type }}</p>
+                        <div class="mt-1 text-xs text-blue-600 font-semibold">
+                            {{ job.matches_count }} Matches gefunden
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if job.is_active %}
+                            <span class="text-green-700 bg-green-100 px-2 py-1 rounded text-xs font-bold">Aktiv</span>
+                        {% else %}
+                            <span class="text-gray-600 bg-gray-100 px-2 py-1 rounded text-xs font-bold">Inaktiv</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">Bearbeiten</a>
+                        <a href="#" class="text-gray-500 hover:text-red-600 text-sm">Löschen</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="px-6 py-8 text-center text-gray-500">
+                        Noch keine Jobs erstellt. <a href="/jobs/create" class="text-blue-600 underline">Erstelle jetzt den ersten!</a>
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
