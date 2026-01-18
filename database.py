@@ -12,19 +12,18 @@ def get_db_connection():
     return conn
 
 def init_db():
-    if os.path.exists(database):
-        os.remove(database)
-        print(f"Bestehende Datenbank {database} wurde entfernt.")
-    
-    conn = get_db_connection()
-    
-    # liest schema.sql aus und führt es aus
-    with open('schema.sql') as f:
-        conn.executescript(f.read())
+    if not os.path.exists(database):
+        # Nur erstellen, wenn sie noch NICHT existiert
+        conn = get_db_connection()
+        with open('schema.sql') as f:
+            conn.executescript(f.read())
         
-    conn.commit()
-    conn.close()
-    print("Neue Datenbank wurde mit allen Tabellen erstellt.")
+        conn.commit()  # <--- HIER WAR ES WICHTIG
+        conn.close()
+        print("Neue Datenbank wurde erstellt.")
+
+    else:
+        print("Datenbank existiert bereits - keine Änderungen vorgenommen.")
 
 if __name__ == '__main__':
     init_db()
