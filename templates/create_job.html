@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% set input_style = "w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" %}
+{% set label_style = "block text-gray-700 font-bold mb-2 text-sm" %}
+{% set btn_style   = "bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition cursor-pointer" %}
+
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Neue Stelle ausschreiben</h2>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="mb-4 p-4 rounded-lg text-sm font-medium 
+                    {{ 'bg-green-100 text-green-700' if category == 'success' else 
+                       'bg-red-100 text-red-700' if category == 'danger' else 
+                       'bg-yellow-100 text-yellow-800' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="">
+        {{ form.hidden_tag() }} <div class="mb-4">
+            {{ form.title.label(class=label_style) }}
+            {{ form.title(class=input_style, placeholder="z.B. Junior Webentwickler") }}
+            {% for error in form.title.errors %}
+                <span class="text-red-500 text-xs">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="mb-4">
+            {{ form.location.label(class=label_style) }}
+            {{ form.location(class=input_style, placeholder="z.B. Berlin / Remote") }}
+            {% for error in form.location.errors %}
+                <span class="text-red-500 text-xs">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="mb-4">
+            {{ form.description.label(class=label_style) }}
+            {{ form.description(class=input_style, rows="5", placeholder="Beschreibe die Aufgaben...") }}
+            {% for error in form.description.errors %}
+                <span class="text-red-500 text-xs">{{ error }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="mb-6">
+            {{ form.requirements.label(class=label_style) }}
+            {{ form.requirements(class=input_style) }}
+            <p class="text-xs text-gray-400 mt-1">Bitte durch Komma trennen.</p>
+        </div>
+
+        <div class="flex justify-end gap-3">
+            <a href="/dashboard/employer" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition">
+                Abbrechen
+            </a>
+            {{ form.submit(class=btn_style) }}
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,3 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% set input_style = "w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" %}
+{% set label_style = "block text-gray-700 font-bold mb-2 text-sm" %}
+{% set btn_save    = "bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition cursor-pointer" %}
+
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+    <div class="border-b pb-4 mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Dein Profil</h1>
+        <p class="text-gray-500 text-sm mt-1">Zeig Unternehmen, wer du bist.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="mb-6 p-4 rounded-lg text-sm font-medium 
+              {{ 'bg-green-100 text-green-700' if category == 'success' else 'bg-red-100 text-red-700' }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="" enctype="multipart/form-data"> {{ form.hidden_tag() }}
+
+        <div class="mb-5">
+            {{ form.name.label(class=label_style) }}
+            {{ form.name(class=input_style) }}
+        </div>
+
+        <div class="mb-5">
+            <label class="{{ label_style }}">Studiengang</label>
+            <input type="text" name="major" class="{{ input_style }}" placeholder="z.B. Informatik, BWL..." value="{{ current_user_major }}">
+        </div>
+
+        <div class="mb-5">
+            {{ form.skills.label(class=label_style) }}
+            {{ form.skills(class=input_style, placeholder="Python, Java, Teamwork") }}
+            <p class="text-xs text-gray-400 mt-1">Mit Komma trennen.</p>
+        </div>
+
+        <div class="mb-6">
+            <label class="{{ label_style }}">Lebenslauf (PDF)</label>
+            <input type="file" name="cv" class="block w-full text-sm text-gray-500
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-full file:border-0
+              file:text-sm file:font-semibold
+              file:bg-blue-50 file:text-blue-700
+              hover:file:bg-blue-100 transition
+            "/>
+        </div>
+
+        <div class="mb-6">
+            {{ form.bio.label(class=label_style) }}
+            {{ form.bio(class=input_style, rows="4", placeholder="Erzähl etwas über dich...") }}
+        </div>
+
+        <div class="flex justify-end gap-4 items-center">
+            <a href="/dashboard/student" class="text-gray-500 hover:text-gray-700 font-medium">Zurück</a>
+            {{ form.submit(class=btn_save, value="Profil speichern") }}
+        </div>
+    </form>
+</div>
+{% endblock %}
 <!DOCTYPE html>
 <html lang="de">
 <head>
