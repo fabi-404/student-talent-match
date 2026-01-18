@@ -12,7 +12,7 @@ Create Table Student (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Tabelle: Arbeitgeber
+-- 2. Tabelle: Arbeitgeber müssen hier noch location und description hinzufügen
 Create Table Employer (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT UNIQUE NOT NULL,
