@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% set input_style = "w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gray-800 outline-none" %}
+{% set label_style = "block text-gray-700 font-bold mb-2 text-sm" %}
+{% set btn_save    = "bg-gray-800 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-900 transition cursor-pointer" %}
+
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+    <div class="border-b pb-4 mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Unternehmensdaten</h1>
+        <p class="text-gray-500 text-sm mt-1">Bearbeite hier deine öffentliche Visitenkarte.</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="mb-6 p-4 rounded-lg text-sm font-medium 
+              {{ 'bg-green-100 text-green-700' if category == 'success' else 'bg-red-100 text-red-700' }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-5">
+            {{ form.company_name.label(class=label_style) }}
+            {{ form.company_name(class=input_style) }}
+        </div>
+
+        <div class="mb-5">
+            {{ form.website.label(class=label_style) }}
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">🌐</span>
+                {{ form.website(class=input_style + " pl-10", placeholder="https://www.firma.de") }}
+            </div>
+        </div>
+
+        <div class="mb-5">
+            {{ form.location.label(class=label_style) }}
+            {{ form.location(class=input_style, placeholder="Hauptsitz (Stadt)") }}
+        </div>
+
+        <div class="mb-6">
+            {{ form.description.label(class=label_style) }}
+            {{ form.description(class=input_style, rows="6", placeholder="Beschreibe deine Unternehmenskultur...") }}
+        </div>
+
+        <div class="flex justify-end gap-4 items-center">
+            <a href="/dashboard/employer" class="text-gray-500 hover:text-gray-700 font-medium">Abbrechen</a>
+            {{ form.submit(class=btn_save, value="Änderungen speichern") }}
+        </div>
+    </form>
+</div>
+{% endblock %}
