@@ -74,6 +74,7 @@ def register_employer():
         # Passwort hashen
         hashed_pw = generate_password_hash(password)
         
+        # Datenbank-Verbindung über die Funktion aus database.py
         conn = get_db_connection()
         try:
             conn.execute(
@@ -103,6 +104,7 @@ def login_student():
         email = form.email.data
         password = form.password.data
         
+        # Datenbank-Verbindung über die Funktion aus database.py
         conn = get_db_connection()
         #.fetchone() holt einen einzelnen Datensatz aus der Db.
         user = conn.execute("SELECT * FROM Student WHERE email = ?", (email,)).fetchone()
@@ -132,7 +134,8 @@ def login_employer():
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
-
+        
+        # Datenbank-Verbindung über die Funktion aus database.py
         conn = get_db_connection()
         employer = conn.execute("SELECT * FROM Employer WHERE email = ?", (email,)).fetchone()
         conn.close()
@@ -185,17 +188,41 @@ def student_profile():
     if form.validate_on_submit():
         # Daten speichern (UPDATE)
         is_active_val = 1 if form.is_active.data else 0
+        
         try:
             conn.execute("""
                 UPDATE Student 
                 SET full_name = ?, university = ?, bio = ?, is_active = ?
                 WHERE id = ?
             """, (form.full_name.data, form.university.data, form.bio.data, is_active_val, student_id))
+            
+            # Skills Hinzufügen
+            raw_skills = form.skills.data.split(',')
+            skill_names = [s.strip() for s in raw_skills if s.strip()]
+            
+            for name in skill_names:
+                #Prüfen, Skill schon vorhanden ?
+                skill = conn.execute ("SELECT id FROM Skill Where name = ?", (name,)).fetchone()
+                if skill:
+                    skill_id = skill['id']
+                else:
+                    #der Skill ist neu!
+                    cursor = conn.execute("INSERT INTO Skill (name) VALUES (?)", (name,))
+                    skill_id = cursor.lastrowid
+                
+                conn.execute("INSERT OR IGNORE INTO Student_Skill (student_id, skill_id) VALUES (?, ?)",
+                             (student_id, skill_id))
+                
+          
+           
             conn.commit()
             flash('Profil erfolgreich aktualisiert!', 'success')
             return redirect(url_for('student_profile'))
+        
         except Exception as e:
+            conn.rollback() 
             flash(f'Fehler beim Speichern: {e}', 'error')
+            
     
     # Wenn GET Request (Seite laden): Formular mit DB-Daten füllen
     elif request.method == 'GET':
@@ -203,6 +230,15 @@ def student_profile():
         form.university.data = student['university']
         form.bio.data = student['bio']
         form.is_active.data = bool(student['is_active'])
+        
+        # Skills für die Anzeige im Textfeld laden
+        skills_query = """
+            SELECT s.name FROM Skill s
+            JOIN Student_Skill ss ON s.id = ss.skill_id
+            WHERE ss.student_id = ?
+        """
+        db_skills = conn.execute(skills_query, (student_id,)).fetchall()
+        form.skills.data = ", ".join([s['name'] for s in db_skills])
 
     conn.close()
     return render_template('student_profile.html', form=form)
@@ -211,6 +247,7 @@ def student_profile():
 @app.route('/employer/profile', methods=['GET', 'POST'])
 @login_required 
 def employer_profile():
+    
     # 1. Sicherstellen, dass es ein Arbeitgeber ist
     employer_id = session.get('employer_id')
     if not employer_id:
