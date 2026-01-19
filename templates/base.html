@@ -15,10 +15,10 @@
             <div class="space-x-4 flex items-center">
                 <!-- Dashboards (nur anzeigen wenn Logik für 'logged_in' existiert, sonst optional) -->
                 {% if session.get('student_id') %}
-                     <a href="/profile/student" class="text-gray-500 hover:text-blue-600 font-medium text-sm">Profil</a>
+                     <a href="{{ url_for('student_profile') }}" class="text-gray-500 hover:text-blue-600 font-medium text-sm">Profil</a>
                      <a href="{{ url_for('logout') }}" class="text-gray-500 hover:text-red-500 text-sm">Logout</a>
                 {% elif session.get('employer_id') %}
-                     <a href="/profile/employer" class="text-gray-500 hover:text-blue-600 font-medium text-sm">Profil</a>
+                     <a href="{{ url_for('employer_profile') }}" class="text-gray-500 hover:text-blue-600 font-medium text-sm">Profil</a>
                      <a href="{{ url_for('logout') }}" class="text-gray-500 hover:text-red-500 text-sm">Logout</a>
                 {% else %}
                     <!-- Öffentliche Links -->
