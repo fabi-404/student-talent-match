@@ -1,75 +1,81 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+{% set card_base = "relative bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-300 transform" %}
+{% set overlay_base = "absolute top-0 h-full w-1/2 opacity-0 hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer z-10" %}
+{% set text_muted = "text-gray-500 text-sm" %}
+{% set skill_tag = "px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md font-medium" %}
+
 <div class="max-w-6xl mx-auto">
-    <div class="flex justify-between items-center mb-8">
+    
+    <div class="flex justify-between items-end mb-10">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">{{ company_name }} Dashboard</h1>
-            <p class="text-gray-600">Verwalte deine Jobs und Kandidaten.</p>
+            <h1 class="text-3xl font-extrabold text-gray-900">Dein Talent-Pool</h1>
+            <p class="text-gray-600 mt-2">Bewege die Maus über die Karten: Rechts für Einladung, Links für Absage.</p>
         </div>
-        <a href="/jobs/create" class="bg-blue-600 text-white px-5 py-3 rounded-lg font-bold shadow hover:bg-blue-700 transition">
-            + Neuen Job posten
+        <a href="/jobs/create" class="bg-gray-900 text-white px-6 py-3 rounded-xl font-bold shadow hover:bg-black transition">
+            + Neuer Job
         </a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-            <div class="text-3xl font-bold text-blue-600">{{ stats.active_jobs }}</div>
-            <div class="text-gray-500 text-sm">Aktive Jobs</div>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-            <div class="text-3xl font-bold text-green-500">{{ stats.new_applicants }}</div>
-            <div class="text-gray-500 text-sm">Neue Bewerber</div>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-            <div class="text-3xl font-bold text-purple-500">{{ stats.total_matches }}</div>
-            <div class="text-gray-500 text-sm">Matches Gesamt</div>
-        </div>
-    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+        
+        {% for student in candidates %}
+        <div class="{{ card_base }} w-full max-w-sm h-96 flex flex-col">
+            
+            <form action="{{ url_for('action_candidate', student_id=student.id, action='ignore') }}" method="POST" class="{{ overlay_base }} left-0 bg-red-500/90 backdrop-blur-sm group">
+                <button type="submit" class="w-full h-full flex flex-col items-center justify-center text-white">
+                    <svg class="w-16 h-16 mb-2 transform group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <span class="font-bold text-lg">Ignorieren</span>
+                </button>
+            </form>
 
-    <h2 class="text-xl font-bold text-gray-800 mb-4">Deine Stellenanzeigen</h2>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table class="min-w-full text-left">
-            <thead class="bg-gray-50 border-b">
-                <tr>
-                    <th class="px-6 py-3 text-gray-500 text-xs font-medium uppercase">Titel & Details</th>
-                    <th class="px-6 py-3 text-gray-500 text-xs font-medium uppercase">Status</th>
-                    <th class="px-6 py-3 text-gray-500 text-xs font-medium uppercase text-right">Aktion</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                
-                {% for job in jobs %}
-                <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4">
-                        <p class="font-bold text-gray-800">{{ job.title }}</p>
-                        <p class="text-xs text-gray-500">{{ job.location }} • {{ job.type }}</p>
-                        <div class="mt-1 text-xs text-blue-600 font-semibold">
-                            {{ job.matches_count }} Matches gefunden
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        {% if job.is_active %}
-                            <span class="text-green-700 bg-green-100 px-2 py-1 rounded text-xs font-bold">Aktiv</span>
-                        {% else %}
-                            <span class="text-gray-600 bg-gray-100 px-2 py-1 rounded text-xs font-bold">Inaktiv</span>
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                        <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">Bearbeiten</a>
-                        <a href="#" class="text-gray-500 hover:text-red-600 text-sm">Löschen</a>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="3" class="px-6 py-8 text-center text-gray-500">
-                        Noch keine Jobs erstellt. <a href="/jobs/create" class="text-blue-600 underline">Erstelle jetzt den ersten!</a>
-                    </td>
-                </tr>
-                {% endfor %}
+            <form action="{{ url_for('action_candidate', student_id=student.id, action='invite') }}" method="POST" class="{{ overlay_base }} right-0 bg-green-500/90 backdrop-blur-sm group">
+                <button type="submit" class="w-full h-full flex flex-col items-center justify-center text-white">
+                    <svg class="w-16 h-16 mb-2 transform group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <span class="font-bold text-lg">Einladen</span>
+                </button>
+            </form>
 
-            </tbody>
-        </table>
+            <div class="p-6 flex flex-col h-full z-0 relative">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-md">
+                        {{ student.name[:1] }}
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800">{{ student.name }}</h2>
+                        <p class="text-blue-600 font-medium text-sm">{{ student.major }}</p>
+                    </div>
+                </div>
+
+                <div class="mb-4 flex-grow">
+                    <p class="text-gray-600 italic text-sm leading-relaxed">
+                        "{{ student.bio }}"
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex flex-wrap gap-2">
+                        {% for skill in student.skills.split(',') %}
+                            <span class="{{ skill_tag }}">{{ skill.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="border-t pt-3 flex justify-between items-center text-xs text-gray-400">
+                        <span>Verfügbar ab sofort</span>
+                        <span class="font-bold text-green-600">{{ student.match_score }}% Match</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-span-full text-center py-20">
+            <div class="text-6xl mb-4">🎉</div>
+            <h3 class="text-xl font-bold text-gray-900">Alle Kandidaten gesichtet!</h3>
+            <p class="text-gray-500">Komm später wieder für neue Matches.</p>
+        </div>
+        {% endfor %}
+
     </div>
 </div>
 {% endblock %}
