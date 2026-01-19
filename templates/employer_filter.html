@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8 text-center">
+        <h1 class="text-3xl font-bold text-gray-900">Kandidaten filtern</h1>
+        <p class="text-gray-500 mt-2">Wähle Fähigkeiten aus, die für deine offenen Stellen wichtig sind.</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+        
+        <!-- Filter Formular -->
+        <form method="POST" action="">
+            
+            <!-- Aktive Filter INFO -->
+            {% if current_filters %}
+            <div class="mb-8 bg-blue-50 border border-blue-100 rounded-lg p-4">
+                <span class="text-blue-800 font-semibold text-sm">Aktuell aktiv:</span>
+                <span class="text-blue-600 text-sm ml-2">
+                    Es werden nur Studenten mit mindestens einer der gewählten Fähigkeiten angezeigt.
+                </span>
+            </div>
+            {% endif %}
+
+            <!-- Skills Grid -->
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Verfügbare Fähigkeiten</h3>
+                
+                {% if skills %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for skill in skills %}
+                    <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition select-none group 
+                                  {% if skill['id']|string in current_filters %} bg-blue-50 border-blue-200 {% endif %}">
+                        
+                        <input type="checkbox" 
+                               name="skills" 
+                               value="{{ skill['id'] }}" 
+                               class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
+                               {% if skill['id']|string in current_filters %} checked {% endif %}>
+                               
+                        <span class="ml-3 text-gray-700 font-medium group-hover:text-gray-900">
+                            {{ skill['name'] }}
+                        </span>
+                    </label>
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <div class="text-center py-8 text-gray-400 italic">
+                        Noch keine Fähigkeiten in der Datenbank vorhanden. <br>
+                        Studenten müssen erst Profile anlegen.
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-between pt-6 border-t border-gray-100">
+                <a href="{{ url_for('employer_swipe') }}" class="text-gray-500 hover:text-gray-700 font-medium">
+                    Überspringen (Alle anzeigen)
+                </a>
+
+                <button type="submit" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition shadow-md flex items-center">
+                    <span>Filter anwenden & Swipen</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

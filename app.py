@@ -307,11 +307,43 @@ def student_matches():
 # Arbeitgeber: Filter und Swipe
 
 @app.route('/employer/filter', methods=['GET', 'POST'])
-@login_required ## login requird decorator##
+@login_required 
 def employer_filter():
+    conn = get_db_connection()
+
     if request.method == 'POST':
+        # 1. Ausgewählte Skill-IDs aus dem Formular holen (Liste von Strings)
+        selected_skills = request.form.getlist('skills') # HTML name="skills"
+        
+        # 2. Filter in der Session speichern (für die Swipe-Logik)
+        if selected_skills:
+            # Wir speichern die Liste der IDs
+            session['filter_skills'] = selected_skills
+            flash(f'{len(selected_skills)} Fähigkeiten als Filter gesetzt.', 'success')
+        else:
+            # Wenn keine ausgewählt sind, Filter entfernen (alle anzeigen)
+            session.pop('filter_skills', None)
+            flash('Filter zurückgesetzt. Zeige alle Studenten.', 'info')
+
+        conn.close()
+        # 3. Weiterleitung zum Swipen wenn eingerichtet 
         return redirect(url_for('employer_swipe'))
-    return render_template('employer_filter.html')
+    
+    # GET: Alle verfügbaren Skills laden, um sie im Formular anzuzeigen
+    # damit werden nur die Skills geladen die Studenten sich auch eingetragen haben um leere swipe views zu vermeiden ##
+    query = """
+        SELECT DISTINCT s.id, s.name 
+        FROM Skill s
+        JOIN Student_Skill ss ON s.id = ss.skill_id
+        ORDER BY s.name ASC
+    """
+    available_skills = conn.execute(query).fetchall()
+    
+    # Aktuell gesetzte Filter laden (um Checkboxen vorzubelegen)
+    current_filters = session.get('filter_skills', []) # Gibt leere Liste zurück, wenn kein Filter gesetzt
+
+    conn.close()
+    return render_template('employer_filter.html', skills=available_skills, current_filters=current_filters)
 
 
 @app.route('/employer/swipe')
