@@ -1,75 +1,76 @@
 {% extends "base.html" %}
 <!-- kann entfernt werden und unter employer profile konsolidiert werden -->
 {% block content %}
-<div class="max-w-6xl mx-auto">
-    <div class="flex justify-between items-center mb-8">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-900">{{ company_name }} Dashboard</h1>
-            <p class="text-gray-600">Verwalte deine Jobs und Kandidaten.</p>
-        </div>
-        <a href="/jobs/create" class="bg-blue-600 text-white px-5 py-3 rounded-lg font-bold shadow hover:bg-blue-700 transition">
-            + Neuen Job posten
-        </a>
+
+{% set card_style = "relative w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transform transition-all duration-300" %}
+{% set zone_base  = "absolute top-0 h-full w-1/2 opacity-0 hover:opacity-95 transition-opacity duration-200 flex flex-col items-center justify-center text-white cursor-pointer z-20" %}
+{% set tag_style  = "px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-full" %}
+
+<div class="min-h-[80vh] flex flex-col items-center justify-center">
+
+    <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold text-gray-900">Kandidaten entdecken</h1>
+        <p class="text-gray-500 text-sm mt-1">Entscheide dich: Links <span class="text-red-500 font-bold">X</span> oder Rechts <span class="text-green-500 font-bold">✓</span></p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-            <div class="text-3xl font-bold text-blue-600">{{ stats.active_jobs }}</div>
-            <div class="text-gray-500 text-sm">Aktive Jobs</div>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-            <div class="text-3xl font-bold text-green-500">{{ stats.new_applicants }}</div>
-            <div class="text-gray-500 text-sm">Neue Bewerber</div>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 text-center">
-            <div class="text-3xl font-bold text-purple-500">{{ stats.total_matches }}</div>
-            <div class="text-gray-500 text-sm">Matches Gesamt</div>
-        </div>
-    </div>
+    {% if candidate %}
+    <div class="{{ card_style }} h-[500px]">
+        
+        <form action="{{ url_for('action_candidate', student_id=candidate.id, action='ignore') }}" method="POST" class="h-full">
+            <button type="submit" class="{{ zone_base }} left-0 bg-gradient-to-r from-red-500 to-red-400">
+                <div class="bg-white text-red-500 rounded-full p-4 mb-2 shadow-lg transform scale-110">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </div>
+                <span class="font-bold text-xl tracking-wide">Ignorieren</span>
+            </button>
+        </form>
 
-    <h2 class="text-xl font-bold text-gray-800 mb-4">Deine Stellenanzeigen</h2>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table class="min-w-full text-left">
-            <thead class="bg-gray-50 border-b">
-                <tr>
-                    <th class="px-6 py-3 text-gray-500 text-xs font-medium uppercase">Titel & Details</th>
-                    <th class="px-6 py-3 text-gray-500 text-xs font-medium uppercase">Status</th>
-                    <th class="px-6 py-3 text-gray-500 text-xs font-medium uppercase text-right">Aktion</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
+        <form action="{{ url_for('action_candidate', student_id=candidate.id, action='invite') }}" method="POST" class="h-full">
+            <button type="submit" class="{{ zone_base }} right-0 bg-gradient-to-l from-green-500 to-green-400">
+                <div class="bg-white text-green-500 rounded-full p-4 mb-2 shadow-lg transform scale-110">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <span class="font-bold text-xl tracking-wide">Einladen</span>
+            </button>
+        </form>
+
+
+        <div class="h-full flex flex-col relative z-10 pointer-events-none">
+            
+            <div class="h-1/3 flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-700">
+                <span class="text-6xl text-white font-bold opacity-30">{{ candidate.name[:1] }}</span>
+            </div>
+
+            <div class="flex-grow p-8 flex flex-col items-center text-center bg-white">
+                <h2 class="text-3xl font-extrabold text-gray-800 mb-1">{{ candidate.name }}</h2>
+                <p class="text-blue-600 font-medium mb-6">{{ candidate.major }}</p>
                 
-                {% for job in jobs %}
-                <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4">
-                        <p class="font-bold text-gray-800">{{ job.title }}</p>
-                        <p class="text-xs text-gray-500">{{ job.location }} • {{ job.type }}</p>
-                        <div class="mt-1 text-xs text-blue-600 font-semibold">
-                            {{ job.matches_count }} Matches gefunden
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        {% if job.is_active %}
-                            <span class="text-green-700 bg-green-100 px-2 py-1 rounded text-xs font-bold">Aktiv</span>
-                        {% else %}
-                            <span class="text-gray-600 bg-gray-100 px-2 py-1 rounded text-xs font-bold">Inaktiv</span>
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                        <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium mr-3">Bearbeiten</a>
-                        <a href="#" class="text-gray-500 hover:text-red-600 text-sm">Löschen</a>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="3" class="px-6 py-8 text-center text-gray-500">
-                        Noch keine Jobs erstellt. <a href="/jobs/create" class="text-blue-600 underline">Erstelle jetzt den ersten!</a>
-                    </td>
-                </tr>
-                {% endfor %}
+                <p class="text-gray-600 italic leading-relaxed mb-6">
+                    "{{ candidate.bio }}"
+                </p>
 
-            </tbody>
-        </table>
+                <div class="flex flex-wrap justify-center gap-2 mt-auto">
+                    {% for skill in candidate.skills.split(',') %}
+                        <span class="{{ tag_style }}">{{ skill.strip() }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="py-4 border-t border-gray-100 bg-gray-50 text-center">
+                <span class="text-green-600 font-bold text-sm">🔥 {{ candidate.match_score }}% Match</span>
+            </div>
+        </div>
+
     </div>
+
+    {% else %}
+    <div class="text-center py-20 max-w-lg bg-white rounded-2xl shadow-sm border border-gray-100 p-10">
+        <div class="text-6xl mb-6">🎉</div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">Alles erledigt!</h3>
+        <p class="text-gray-500 mb-8">Keine neuen Kandidaten mehr verfügbar.</p>
+        <a href="{{ url_for('index') }}" class="text-blue-600 font-medium hover:underline">Zurück zum Start</a>
+    </div>
+    {% endif %}
+
 </div>
 {% endblock %}
