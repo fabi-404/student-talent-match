@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, url_for, render_template, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
-from forms import RegistrationForm, StudentRegistrationForm, LoginForm
+from forms import RegistrationForm, StudentRegistrationForm, LoginForm, StudentProfileForm, EmployerProfileForm 
 from database import get_db_connection
 import sqlite3
 from functools import wraps
@@ -74,6 +74,7 @@ def register_employer():
         # Passwort hashen
         hashed_pw = generate_password_hash(password)
         
+        # Datenbank-Verbindung über die Funktion aus database.py
         conn = get_db_connection()
         try:
             conn.execute(
@@ -103,6 +104,7 @@ def login_student():
         email = form.email.data
         password = form.password.data
         
+        # Datenbank-Verbindung über die Funktion aus database.py
         conn = get_db_connection()
         #.fetchone() holt einen einzelnen Datensatz aus der Db.
         user = conn.execute("SELECT * FROM Student WHERE email = ?", (email,)).fetchone()
@@ -132,12 +134,15 @@ def login_employer():
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
-
+        
+        # Datenbank-Verbindung über die Funktion aus database.py
         conn = get_db_connection()
         employer = conn.execute("SELECT * FROM Employer WHERE email = ?", (email,)).fetchone()
         conn.close()
         
         if employer and check_password_hash(employer['password_hash'], password):
+
+            session.clear()  # Vorherige Session-Daten löschen
             
             session['employer_name'] = employer['company_name']
             session['employer_id'] = employer['id']
@@ -145,7 +150,7 @@ def login_employer():
             
             flash('Erfolgreich eingeloggt!', 'success')
             
-            return redirect(url_for('employer_filter'))
+            return redirect(url_for('employer_profile'))
     
         else:
             # Falls Arbeitgeber nicht gefunden oder Passwort falsch
@@ -164,13 +169,132 @@ def logout():
 # Student
 
 @app.route('/student/profile', methods=['GET', 'POST'])
-@login_required ## login requird decorator##
+@login_required 
 def student_profile():
-    if request.method == 'POST':
-        # später: Profil aktualisieren
-        return redirect(url_for('student_profile'))
-    return render_template('student_profile.html')
+    conn = get_db_connection()
+    student_id = session.get('student_id')
+    
+    # Aktuelle Daten laden
+    student = conn.execute("SELECT * FROM Student WHERE id = ?", (student_id,)).fetchone()
+    
+    if student is None:
+        conn.close()
+        flash("Benutzer nicht gefunden", "error")
+        return redirect(url_for('logout'))
 
+    # Formular initialisieren
+    form = StudentProfileForm()
+
+    if form.validate_on_submit():
+        # Daten speichern (UPDATE)
+        is_active_val = 1 if form.is_active.data else 0
+        
+        try:
+            conn.execute("""
+                UPDATE Student 
+                SET full_name = ?, university = ?, bio = ?, is_active = ?
+                WHERE id = ?
+            """, (form.full_name.data, form.university.data, form.bio.data, is_active_val, student_id))
+            
+            # Skills Hinzufügen
+            raw_skills = form.skills.data.split(',')
+            skill_names = [s.strip() for s in raw_skills if s.strip()]
+            
+            for name in skill_names:
+                #Prüfen, Skill schon vorhanden ?
+                skill = conn.execute ("SELECT id FROM Skill Where name = ?", (name,)).fetchone()
+                if skill:
+                    skill_id = skill['id']
+                else:
+                    #der Skill ist neu!
+                    cursor = conn.execute("INSERT INTO Skill (name) VALUES (?)", (name,))
+                    skill_id = cursor.lastrowid
+                
+                conn.execute("INSERT OR IGNORE INTO Student_Skill (student_id, skill_id) VALUES (?, ?)",
+                             (student_id, skill_id))
+                
+          
+           
+            conn.commit()
+            flash('Profil erfolgreich aktualisiert!', 'success')
+            return redirect(url_for('student_profile'))
+        
+        except Exception as e:
+            conn.rollback() 
+            flash(f'Fehler beim Speichern: {e}', 'error')
+            
+    
+    # Wenn GET Request (Seite laden): Formular mit DB-Daten füllen
+    elif request.method == 'GET':
+        form.full_name.data = student['full_name']
+        form.university.data = student['university']
+        form.bio.data = student['bio']
+        form.is_active.data = bool(student['is_active'])
+        
+        # Skills für die Anzeige im Textfeld laden
+        skills_query = """
+            SELECT s.name FROM Skill s
+            JOIN Student_Skill ss ON s.id = ss.skill_id
+            WHERE ss.student_id = ?
+        """
+        db_skills = conn.execute(skills_query, (student_id,)).fetchall()
+        form.skills.data = ", ".join([s['name'] for s in db_skills])
+
+    conn.close()
+    return render_template('student_profile.html', form=form)
+
+## Arbeitgeber Profil analog dem Studentenprofil##
+@app.route('/employer/profile', methods=['GET', 'POST'])
+@login_required 
+def employer_profile():
+    
+    # 1. Sicherstellen, dass es ein Arbeitgeber ist
+    employer_id = session.get('employer_id')
+    if not employer_id:
+        flash("Nur für Arbeitgeber.", "warning")
+        return redirect(url_for('index'))
+
+    conn = get_db_connection()
+    
+    # 2. Bestehende Daten laden
+    employer = conn.execute("SELECT * FROM Employer WHERE id = ?", (employer_id,)).fetchone()
+    
+    if not employer:
+        conn.close()
+        return redirect(url_for('logout'))
+
+    form = EmployerProfileForm()
+
+    # 3. Speichern (POST Request)
+    if form.validate_on_submit():
+        try:
+            conn.execute("""
+                UPDATE Employer 
+                SET company_name = ?, location = ?, description = ?
+                WHERE id = ?
+            """, (form.company_name.data, form.location.data, 
+                  form.description.data, employer_id))
+            conn.commit()
+            
+            # Session Name aktualisieren, falls Firmenname geändert wurde
+            session['employer_name'] = form.company_name.data
+            
+            flash('Unternehmensprofil erfolgreich aktualisiert!', 'success')
+            return redirect(url_for('employer_profile'))
+        except Exception as e:
+            flash(f'Fehler beim Speichern: {e}', 'error')
+
+    # 4. Formular befüllen (GET Request)
+    elif request.method == 'GET':
+        form.company_name.data = employer['company_name']
+        
+        # Sicherer Zugriff, falls Felder in DB NULL sind oder Spalten noch fehlen
+        # (Dictionary Get method erlaubt default value falls key fehlt)
+        form.location.data = employer['location'] if 'location' in employer.keys() else ''
+        form.description.data = employer['description'] if 'description' in employer.keys() else ''
+
+    conn.close()
+    return render_template('employer_profile.html', form=form)
 
 @app.route('/student/matches')
 @login_required ## login requird decorator##
@@ -183,11 +307,43 @@ def student_matches():
 # Arbeitgeber: Filter und Swipe
 
 @app.route('/employer/filter', methods=['GET', 'POST'])
-@login_required ## login requird decorator##
+@login_required 
 def employer_filter():
+    conn = get_db_connection()
+
     if request.method == 'POST':
+        # 1. Ausgewählte Skill-IDs aus dem Formular holen (Liste von Strings)
+        selected_skills = request.form.getlist('skills') # HTML name="skills"
+        
+        # 2. Filter in der Session speichern (für die Swipe-Logik)
+        if selected_skills:
+            # Wir speichern die Liste der IDs
+            session['filter_skills'] = selected_skills
+            flash(f'{len(selected_skills)} Fähigkeiten als Filter gesetzt.', 'success')
+        else:
+            # Wenn keine ausgewählt sind, Filter entfernen (alle anzeigen)
+            session.pop('filter_skills', None)
+            flash('Filter zurückgesetzt. Zeige alle Studenten.', 'info')
+
+        conn.close()
+        # 3. Weiterleitung zum Swipen wenn eingerichtet 
         return redirect(url_for('employer_swipe'))
-    return render_template('employer_filter.html')
+    
+    # GET: Alle verfügbaren Skills laden, um sie im Formular anzuzeigen
+    # damit werden nur die Skills geladen die Studenten sich auch eingetragen haben um leere swipe views zu vermeiden ##
+    query = """
+        SELECT DISTINCT s.id, s.name 
+        FROM Skill s
+        JOIN Student_Skill ss ON s.id = ss.skill_id
+        ORDER BY s.name ASC
+    """
+    available_skills = conn.execute(query).fetchall()
+    
+    # Aktuell gesetzte Filter laden (um Checkboxen vorzubelegen)
+    current_filters = session.get('filter_skills', []) # Gibt leere Liste zurück, wenn kein Filter gesetzt
+
+    conn.close()
+    return render_template('employer_filter.html', skills=available_skills, current_filters=current_filters)
 
 
 @app.route('/employer/swipe')
@@ -222,11 +378,11 @@ def send_invite(student_id):
 # 
 @app.errorhandler(404)
 def not_found(e):
-    return render_template('404.html'), 404
-
+    return "Seite nicht gefunden (Fehler 404). Bitte prüfen Sie die URL.", 404
 
 @app.errorhandler(500)
 def server_error(e):
-    return render_template('500.html'), 500
+    # Zeigt den echten Fehler direkt im Browser an
+    return f"Ein interner Fehler ist aufgetreten: {e}", 500
 
 

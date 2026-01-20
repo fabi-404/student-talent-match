@@ -6,12 +6,13 @@
 {% set label_style = "block text-gray-700 font-bold mb-2 text-sm" %}
 {% set btn_save    = "bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition cursor-pointer" %}
 
-<div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-100 mt-10">
     <div class="border-b pb-4 mb-6">
         <h1 class="text-2xl font-bold text-gray-800">Dein Profil</h1>
-        <p class="text-gray-500 text-sm mt-1">Zeig Unternehmen, wer du bist.</p>
+        <p class="text-gray-500 text-sm mt-1">Hier kannst du deine Daten für Arbeitgeber bearbeiten.</p>
     </div>
 
+    <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
@@ -23,76 +24,45 @@
       {% endif %}
     {% endwith %}
 
-    <form method="POST" action="" enctype="multipart/form-data"> {{ form.hidden_tag() }}
+    <form method="POST"> 
+        {{ form.hidden_tag() }}
 
+        <!-- Name -->
         <div class="mb-5">
-            {{ form.name.label(class=label_style) }}
-            {{ form.name(class=input_style) }}
+            {{ form.full_name.label(class=label_style) }}
+            {{ form.full_name(class=input_style) }}
         </div>
 
+        <!-- Uni / Studiengang -->
         <div class="mb-5">
-            <label class="{{ label_style }}">Studiengang</label>
-            <input type="text" name="major" class="{{ input_style }}" placeholder="z.B. Informatik, BWL..." value="{{ current_user_major }}">
+            {{ form.university.label(class=label_style) }}
+            {{ form.university(class=input_style, placeholder="z.B. TU München, Informatik") }}
         </div>
 
+        <!-- Skills (Neu hinzugefügt in forms.py) -->
         <div class="mb-5">
             {{ form.skills.label(class=label_style) }}
             {{ form.skills(class=input_style, placeholder="Python, Java, Teamwork") }}
-            <p class="text-xs text-gray-400 mt-1">Mit Komma trennen.</p>
         </div>
 
-        <div class="mb-6">
-            <label class="{{ label_style }}">Lebenslauf (PDF)</label>
-            <input type="file" name="cv" class="block w-full text-sm text-gray-500
-              file:mr-4 file:py-2 file:px-4
-              file:rounded-full file:border-0
-              file:text-sm file:font-semibold
-              file:bg-blue-50 file:text-blue-700
-              hover:file:bg-blue-100 transition
-            "/>
-        </div>
-
+        <!-- Bio -->
         <div class="mb-6">
             {{ form.bio.label(class=label_style) }}
             {{ form.bio(class=input_style, rows="4", placeholder="Erzähl etwas über dich...") }}
         </div>
 
+        <!-- Sichtbarkeit -->
+        <div class="mb-6 flex items-center">
+            {{ form.is_active(class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded") }}
+            <label for="is_active" class="ml-2 block text-sm text-gray-900">
+                Profil für Arbeitgeber sichtbar machen
+            </label>
+        </div>
+
         <div class="flex justify-end gap-4 items-center">
-            <a href="/dashboard/student" class="text-gray-500 hover:text-gray-700 font-medium">Zurück</a>
-            {{ form.submit(class=btn_save, value="Profil speichern") }}
+            <a href="{{ url_for('index') }}" class="text-gray-500 hover:text-gray-700 font-medium">Zurück</a>
+            {{ form.submit(class=btn_save) }}
         </div>
     </form>
 </div>
 {% endblock %}
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <title>Mein Profil</title>
-</head>
-<body>
-    <h1>Studenten Profil</h1>
-    
-    <!-- Flash Messages Block -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul>
-        {% for category, message in messages %}
-          <li class="{{ category }}">{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-
-    <p>Willkommen in deinem Profil-Bereich!</p>
-    <p>Du bist erfolgreich eingeloggt.</p>
-    
-    <hr>
-    <h3>Deine Daten</h3>
-    <p>Hier werden später deine Fähigkeiten, Interessen und Matches angezeigt.</p>
-
-    <br>
-    <p><a href="{{ url_for('student_matches') }}">Zu den Matches</a></p>
-    <p><a href="{{ url_for('index') }}">Zurück zur Startseite</a></p>
-</body>
-</html>
