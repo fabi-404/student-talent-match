@@ -34,6 +34,7 @@ def register_student():
         email = form.email.data
         password = form.password.data
         university = form.university.data
+        full_name = form.full_name.data
 
         hashed_pw = generate_password_hash(password)
      
@@ -43,7 +44,7 @@ def register_student():
             #schreiben in die Tabelle Student
             conn.execute( 
                          "INSERT INTO Student (email, full_name, university,password_hash) VALUES (?,?,?,?)",
-                         (email, email, university, hashed_pw))
+                         (email, full_name, university, hashed_pw))
             conn.commit()
             
             #Erfolg, User zur Login-Seite weiterleiten
@@ -347,16 +348,130 @@ def employer_filter():
 
 
 @app.route('/employer/swipe')
-@login_required ## login requird decorator##
+@login_required 
 def employer_swipe():
-    # später: ein Profil auswählen
-    return render_template('swipe_view.html')
+    employer_id = session.get('employer_id')
+    conn = get_db_connection()
+    
+    # 1. Filter laden
+    filter_skills = session.get('filter_skills', [])
+
+    # 2. Query bauen
+    query = """
+        SELECT s.* FROM Student s
+        WHERE s.is_active = 1
+        AND s.id NOT IN (SELECT student_id FROM Swipe WHERE employer_id = ?)
+    """
+    params = [employer_id]
+
+    if filter_skills:
+        placeholders = ','.join(['?'] * len(filter_skills))
+        query += f" AND s.id IN (SELECT student_id FROM Student_Skill WHERE skill_id IN ({placeholders}))"
+        params.extend(filter_skills)
+
+    query += " ORDER BY RANDOM() LIMIT 1"
+    
+    row = conn.execute(query, params).fetchone()
+    
+    # Hier erstellen wir ein NEUES, sauberes Dictionary für das Template
+    candidate_data = None
+    
+    if row:
+        # Wir greifen auf die Spalten der DB zu (via Index oder Name)
+        # und speichern sie sicher in einem neuen Objekt
+        candidate_data = {
+            'id': row['id'],
+            # Fallback: Falls 'full_name' leer ist, nutze "Unbekannt"
+            'name': row['full_name'] if row['full_name'] else "Unbekannt",
+            'major': row['university'] if row['university'] else "Keine Angabe",
+            'bio': row['bio'] if row.keys().__contains__('bio') and row['bio'] else "Keine Beschreibung verfügbar.",
+        }
+
+        # Skills laden
+        skills_rows = conn.execute("""
+            SELECT name FROM Skill 
+            JOIN Student_Skill ON Skill.id = Student_Skill.skill_id 
+            WHERE student_id = ?
+        """, (row['id'],)).fetchall()
+        
+        if skills_rows:
+            skill_list = [s['name'] for s in skills_rows]
+            candidate_data['skills'] = ", ".join(skill_list)
+        else:
+            candidate_data['skills'] = "Neu dabei" 
+
+        # Match Score berechnen
+        candidate_data['match_score'] = 95 
+
+    conn.close()
+    
+    # Wir übergeben 'candidate_data' an das Template
+    return render_template('card_view_swipe.html', candidate=candidate_data)
 
 
-@app.route('/employer/swipe/<int:student_id>/<action>', methods=['POST'])
-def swipe_action(student_id, action):
-    # später: Swipe speichern
+@app.route('/employer/action/<int:student_id>/<action>', methods=['POST'])
+@login_required
+def action_candidate(student_id, action):
+    employer_id = session.get('employer_id')
+    
+    # Mapping: Action aus URL zu Datenbank-Wert
+    # invite -> 1 (Like/Einladung)
+    # ignore -> 0 (Dislike/Ignorieren)
+    direction = 1 if action == 'invite' else 0
+    
+    conn = get_db_connection()
+    try:
+        # In die Swipe Tabelle eintragen, damit der Student nicht nochmal angezeigt wird
+        conn.execute(
+            "INSERT INTO Swipe (employer_id, student_id, direction) VALUES (?, ?, ?)",
+            (employer_id, student_id, direction)
+        )
+        conn.commit()
+        
+        # Optional: Wenn es ein "Invite" ist, könnte man hier direkt eine Benachrichtigung auslösen
+        if direction == 1:
+            flash("Kandidat wurde eingeladen (gespeichert).", "success")
+            
+    except Exception as e:
+        print(f"Swipe Fehler: {e}")
+        # Passiert z.B. wenn man doppelt klickt (Unique Constraint), ignorieren wir hier
+    finally:
+        conn.close()
+        
+    # Sofort weiter zum nächsten Kandidaten
     return redirect(url_for('employer_swipe'))
+
+@app.route('/debug/reset_swipes')
+@login_required
+def reset_swipes():
+    conn = get_db_connection()
+    # Löscht ALLE Swipes des aktuell eingeloggten Arbeitgebers
+    conn.execute("DELETE FROM Swipe WHERE employer_id = ?", (session.get('employer_id'),))
+    conn.commit()
+    conn.close()
+    flash("Swipe-Historie zurückgesetzt. Alle Kandidaten sind wieder verfügbar.", "info")
+    return redirect(url_for('employer_swipe'))
+
+@app.route('/debug/students')
+def debug_students():
+    conn = get_db_connection()
+    students = conn.execute("SELECT * FROM Student").fetchall()
+    conn.close()
+    
+    # Zeigt alle Studenten als Text im Browser
+    output = "<h1>Alle Studenten in der DB:</h1>"
+    for s in students:
+        output += f"""
+        <div style='border:1px solid #ccc; padding:10px; margin:10px;'>
+            <b>ID:</b> {s['id']}<br>
+            <b>Email:</b> {s['email']}<br>
+            <b>Full Name:</b> '{s['full_name']}'<br>
+            <b>University:</b> '{s['university']}'<br>
+            <b>Bio:</b> '{s['bio']}'<br>
+            <b>is_active:</b> {s['is_active']}<br>
+        </div>
+        """
+    return output
 
 # Arbeitgeber: Übersicht
 
