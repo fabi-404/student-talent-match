@@ -7,6 +7,19 @@
 {% set btn_save    = "bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition cursor-pointer" %}
 
 <div class="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-100 mt-10">
+    
+    <!-- NEU: Tab Navigation -->
+    <div class="flex border-b mb-6">
+        <a href="{{ url_for('student_profile') }}" 
+           class="w-1/2 py-3 text-center border-b-2 font-bold text-blue-600 border-blue-600">
+           Profil bearbeiten
+        </a>
+        <a href="{{ url_for('student_matches') }}" 
+           class="w-1/2 py-3 text-center border-b-2 font-medium text-gray-500 border-transparent hover:text-blue-500 hover:border-gray-300 transition">
+           Meine Einladungen / Matches
+        </a>
+    </div>
+
     <div class="border-b pb-4 mb-6">
         <h1 class="text-2xl font-bold text-gray-800">Dein Profil</h1>
         <p class="text-gray-500 text-sm mt-1">Hier kannst du deine Daten für Arbeitgeber bearbeiten.</p>

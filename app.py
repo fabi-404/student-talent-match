@@ -300,8 +300,30 @@ def employer_profile():
 @app.route('/student/matches')
 @login_required ## login requird decorator##
 def student_matches():
-    # später: passende Einträge laden
-    return render_template('student_matches.html')
+    student_id = session.get('student_id')
+    
+    # Sicherstellung, dass nur Studenten zugreifen (optional, aber gut für Sicherheit)
+    if not student_id:
+        flash("Diese Seite ist nur für Studenten.", "warning")
+        return redirect(url_for('index'))
+
+    conn = get_db_connection()
+    
+    # Wir holen alle Interviews und verknüpfen (JOIN) sie mit der Arbeitgeber-Tabelle,
+    # um den Firmennamen und die E-Mail anzuzeigen.
+    query = """
+        SELECT i.id, i.message, i.status, i.sent_at, 
+               e.company_name, e.email, e.location
+        FROM interviews i
+        JOIN Employer e ON i.employer_id = e.id
+        WHERE i.student_id = ?
+        ORDER BY i.sent_at DESC
+    """
+    matches = conn.execute(query, (student_id,)).fetchall()
+    conn.close()
+
+    # Wir rendern ein neues Template und übergeben die Matches
+    return render_template('student_matches.html', matches=matches)
 
 
 
@@ -426,12 +448,19 @@ def action_candidate(student_id, action):
             "INSERT INTO Swipe (employer_id, student_id, direction) VALUES (?, ?, ?)",
             (employer_id, student_id, direction)
         )
-        conn.commit()
+       
         
-        # Optional: Wenn es ein "Invite" ist, könnte man hier direkt eine Benachrichtigung auslösen
+        # 2. Wenn es ein Like (Invite) ist -> Direkt Einladung erstellen
         if direction == 1:
-            flash("Kandidat wurde eingeladen (gespeichert).", "success")
+            # Wir nutzen INSERT OR IGNORE, falls man versehentlich doppelt klickt
+            # (obwohl Swipe constraint das meist verhindert)
+            conn.execute("""
+                INSERT INTO interviews (student_id, employer_id, message, status) 
+                VALUES (?, ?, ?, 'pending')
+            """, (student_id, employer_id, "Wir würden Sie gerne kennenlernen!"))
             
+            flash("Kandidat wurde eingeladen! Einladung gesendet.", "success")
+        conn.commit()
     except Exception as e:
         print(f"Swipe Fehler: {e}")
         # Passiert z.B. wenn man doppelt klickt (Unique Constraint), ignorieren wir hier
@@ -441,7 +470,7 @@ def action_candidate(student_id, action):
     # Sofort weiter zum nächsten Kandidaten
     return redirect(url_for('employer_swipe'))
 
-@app.route('/debug/reset_swipes')
+@app.route('/debug/reset_swipes') ## route um die swipes zurückzusetzen##
 @login_required
 def reset_swipes():
     conn = get_db_connection()
@@ -452,12 +481,13 @@ def reset_swipes():
     flash("Swipe-Historie zurückgesetzt. Alle Kandidaten sind wieder verfügbar.", "info")
     return redirect(url_for('employer_swipe'))
 
-@app.route('/debug/students')
+@app.route('/debug/students') ## route um alle studenten in der db anzuzeigen##
+@login_required
 def debug_students():
     conn = get_db_connection()
     students = conn.execute("SELECT * FROM Student").fetchall()
     conn.close()
-    
+    ## html direkt in der logik weil extra tempate dafür übeflüssig ist ##
     # Zeigt alle Studenten als Text im Browser
     output = "<h1>Alle Studenten in der DB:</h1>"
     for s in students:
@@ -473,7 +503,16 @@ def debug_students():
         """
     return output
 
+@app.route('/debug/interviews')
+def debug_interviews():
+    conn = get_db_connection()
+    interviews = conn.execute("SELECT * FROM interviews").fetchall()
+    conn.close()
+    # Listet alle Interviews roh auf
+    return str([dict(i) for i in interviews])
+
 # Arbeitgeber: Übersicht
+
 
 @app.route('/employer/matches')
 @login_required ## login requird decorator##    
