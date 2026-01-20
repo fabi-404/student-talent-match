@@ -18,6 +18,8 @@ Create Table Employer (
     email TEXT UNIQUE NOT NULL,
     company_name TEXT NOT NULL,
     password_hash TEXT NOT NULL,
+    location TEXT, 
+    description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 -- 3. Tabelle: Skills
