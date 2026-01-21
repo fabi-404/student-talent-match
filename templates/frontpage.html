@@ -1,21 +1,49 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="text-center py-16">
+<div class="flex flex-col items-center justify-center min-h-[60vh] text-center">
+    
     <h1 class="text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">
         Finde dein perfektes <span class="text-blue-600">Match</span>.
     </h1>
-    <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+    
+    <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
         Die Plattform, die Studierende und Unternehmen verbindet. Simpel. Schnell. Direkt.
     </p>
-    
-    <div class="flex justify-center gap-4">
-        <a href="{{ url_for('register_student') }}" class="bg-green-500 text-white px-8 py-3 rounded-lg font-bold shadow hover:bg-green-600 transition">
-            Start als Student
-        </a>
-        <a href="{{ url_for('register_employer') }}" class="bg-gray-800 text-white px-8 py-3 rounded-lg font-bold shadow hover:bg-gray-900 transition">
-            Start als Unternehmen
-        </a>
+
+    <div class="flex flex-col sm:flex-row gap-6 justify-center w-full">
+        
+        <!-- Button Logik für STUDENTEN -->
+        {% if session.get('student_id') %}
+            <!-- Fall A: Student ist eingeloggt -> Gehe zum Dashboard -->
+            <a href="{{ url_for('student_profile') }}" 
+               class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1">
+               Zum Profil (Student)
+            </a>
+        {% else %}
+            <!-- Fall B: Niemand (oder Employer) eingeloggt -> Zur Registrierung -->
+            <a href="{{ url_for('register_student') }}" 
+               class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1">
+               Start als Student
+            </a>
+        {% endif %}
+
+
+        <!-- Button Logik für UNTERNEHMEN -->
+        {% if session.get('employer_id') %}
+            <!-- Fall A: Arbeitgeber ist eingeloggt -> Gehe zum Profil -->
+            <a href="{{ url_for('employer_profile') }}" 
+               class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1">
+               Zum Profil (Unternehmen)
+            </a>
+        {% else %}
+            <!-- Fall B: Niemand eingeloggt -> Zur Registrierung -->
+            <a href="{{ url_for('register_employer') }}" 
+               class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1">
+               Start als Unternehmen
+            </a>
+        {% endif %}
+
     </div>
 </div>
 {% endblock %}
