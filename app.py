@@ -155,8 +155,7 @@ def login_employer():
     
         else:
             # Falls Arbeitgeber nicht gefunden oder Passwort falsch
-            flash('E-Mail oder Passwort falsch.', 'error')
-        
+            flash('E-Mail oder Passwort falsch.', 'error')´
         
     return render_template('login_employer.html', form=form)
 
@@ -168,7 +167,6 @@ def logout():
     return redirect(url_for('index'))
 
 # Student
-
 @app.route('/student/profile', methods=['GET', 'POST'])
 @login_required 
 def student_profile():
@@ -189,7 +187,7 @@ def student_profile():
     if form.validate_on_submit():
         # Daten speichern (UPDATE)
         is_active_val = 1 if form.is_active.data else 0
-        
+
         try:
             conn.execute("""
                 UPDATE Student 
@@ -214,8 +212,6 @@ def student_profile():
                 conn.execute("INSERT OR IGNORE INTO Student_Skill (student_id, skill_id) VALUES (?, ?)",
                              (student_id, skill_id))
                 
-          
-           
             conn.commit()
             flash('Profil erfolgreich aktualisiert!', 'success')
             return redirect(url_for('student_profile'))
@@ -324,8 +320,6 @@ def student_matches():
 
     # Wir rendern ein neues Template und übergeben die Matches
     return render_template('student_matches.html', matches=matches)
-
-
 
 # Arbeitgeber: Filter und Swipe
 
@@ -448,7 +442,6 @@ def action_candidate(student_id, action):
             "INSERT INTO Swipe (employer_id, student_id, direction) VALUES (?, ?, ?)",
             (employer_id, student_id, direction)
         )
-       
         
         # 2. Wenn es ein Like (Invite) ist -> Direkt Einladung erstellen
         if direction == 1:
@@ -512,7 +505,6 @@ def debug_interviews():
     return str([dict(i) for i in interviews])
 
 # Arbeitgeber: Übersicht
-
 
 @app.route('/employer/matches')
 @login_required ## login requird decorator##    
