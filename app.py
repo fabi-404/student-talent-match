@@ -379,7 +379,7 @@ def employer_swipe():
         AND s.id NOT IN (SELECT student_id FROM Swipe WHERE employer_id = ?)
     """
     params = [employer_id]
-
+## dynamische Abfrage der Studentenprofile basierend auf den ausgewählten Fähigkeiten des Arbeitgebers.##
     if filter_skills:
         placeholders = ','.join(['?'] * len(filter_skills))
         query += f" AND s.id IN (SELECT student_id FROM Student_Skill WHERE skill_id IN ({placeholders}))"
