@@ -6,7 +6,7 @@ import sqlite3
 from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = 'super_secret_key'  # Notwendig für Sessions und Flash-Nachrichten, muss noch erstellt werden todo FP ##
+app.secret_key = 'super_secret_key'  # Notwendig für Sessions und Flash-Nachrichten##
 
 ## Login Sicherheit damit man nur auf bestimmte Seiten zugreifen kann wenn man eingeloggt ist##
 
@@ -155,7 +155,7 @@ def login_employer():
     
         else:
             # Falls Arbeitgeber nicht gefunden oder Passwort falsch
-            flash('E-Mail oder Passwort falsch.', 'error')´
+            flash('E-Mail oder Passwort falsch.', 'error')
         
     return render_template('login_employer.html', form=form)
 
@@ -474,27 +474,7 @@ def reset_swipes():
     flash("Swipe-Historie zurückgesetzt. Alle Kandidaten sind wieder verfügbar.", "info")
     return redirect(url_for('employer_swipe'))
 
-@app.route('/debug/students') ## route um alle studenten in der db anzuzeigen##
-@login_required
-def debug_students():
-    conn = get_db_connection()
-    students = conn.execute("SELECT * FROM Student").fetchall()
-    conn.close()
-    ## html direkt in der logik weil extra tempate dafür übeflüssig ist ##
-    # Zeigt alle Studenten als Text im Browser
-    output = "<h1>Alle Studenten in der DB:</h1>"
-    for s in students:
-        output += f"""
-        <div style='border:1px solid #ccc; padding:10px; margin:10px;'>
-            <b>ID:</b> {s['id']}<br>
-            <b>Email:</b> {s['email']}<br>
-            <b>Full Name:</b> '{s['full_name']}'<br>
-            <b>University:</b> '{s['university']}'<br>
-            <b>Bio:</b> '{s['bio']}'<br>
-            <b>is_active:</b> {s['is_active']}<br>
-        </div>
-        """
-    return output
+
 
 @app.route('/debug/interviews')
 def debug_interviews():
