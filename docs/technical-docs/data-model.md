@@ -1,22 +1,14 @@
----
-title: Data Model
-parent: Technical Docs
-nav_order: 2
----
 
-{: .label }
-[Jane Dane]
+# Datenmodell
 
-{: .no_toc }
-# Data model
+Die beiden Datenmodelle dienen als Grundlage für die Umsetzung unseres Projekts. Das ER-Modell hilft dabei, die fachlichen Zusammenhänge der Daten zu strukturieren, während das relationale Modell die Basis für die konkrete Implementierung der Datenbank bildet. Gemeinsam unterstützen sie eine saubere und nachvollziehbare Datenbankstruktur.
 
-<details open markdown="block">
-{: .text-delta }
-<summary>Table of contents</summary>
-+ ToC
-{: toc }
-</details>
+### 1. das konzeptionelle ER-Modell
 
-<img width="1191" height="685" alt="image" src="https://github.com/user-attachments/assets/3cf9f715-d4e5-4040-a5ad-4108316807c2" />
+<img width="1016" height="548" alt="Datenmodell ERM" src="https://github.com/user-attachments/assets/a20c0b12-bcd5-4d8f-8231-acc07d8c5005" />
 
-<img width="1194" height="690" alt="image" src="https://github.com/user-attachments/assets/24a66e4f-f137-497c-96f5-dea09459360d" />
+### 2. das relationale Datenbankmodell
+
+<img width="2282" height="1442" alt="RM-Modell" src="https://github.com/user-attachments/assets/ebdb975c-9e43-4aaf-91ae-2a6a238474d5" />
+
+
