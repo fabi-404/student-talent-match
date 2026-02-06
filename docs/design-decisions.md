@@ -9,38 +9,58 @@ nav_order: 3
 {: .no_toc }
 # Design decisions
 
-<details open markdown="block">
+<details open>
 {: .text-delta }
 <summary>Table of contents</summary>
-+ ToC
-{: toc }
-</details>
 
-## 01: [Title]
+- TOC
+{:toc}
+
+## 01: Wahl des Datenbank-Zugriffs 
 
 ### Meta
 
 Status
-: **Work in progress** - Decided - Obsolete
-
+: **entschieden**  
 Updated
-: DD-MMM-YYYY
+: 08-02-2026
 
 ### Problem statement
 
-[Describe the problem to be solved or the goal to be achieved. Include relevant context information.]
+Im Rahmen der Entwicklung von "Student-Talent-Match" stehen wir vor der Herausforderung, ein Datenmodell zu implementieren, das die Dynamik einer Recruiting-Plattform (Nutzerprofile, Skill-Sets, Swipe-Logik und Interview-Einladungen) stabil abbildet. Da unsere Web-App auf Python/Flask und SQLite basiert, ist die zentrale Frage, wie wir die Interaktion zwischen der Anwendungslogik und der Datenhaltung gestalten.
+
+Konkret müssen wir entscheiden, ob wir ein **Object-Relational Mapping (ORM)** wie SQLAlchemy einsetzen oder die Datenbank-Operationen (CRUD) über **Plain SQL** abwickeln.
+Wir brauchten eine Lösung, die maximale Kontrolle bei minimalem technischem Overhead bietet.
 
 ### Decision
 
-[Describe **which** design decision was taken for **what reason** and by **whom**.]
+Wir entschieden uns bewusst für **Plain SQL**. 
+Diese Strategie gibt uns die maximale Transparenz, die wir für unser Matching-System brauchen. Da das Filtern von Talenten nach spezifischen Skills das Herzstück unserer App ist, wollen wir die volle Kontrolle über jede einzelne Query behalten, anstatt uns auf die automatische Generierung eines ORMs zu verlassen. Durch den Verzicht auf SQLAlchemy halten wir den Technologie-Stack schlank und vermeiden eine "Blackbox", die uns beim Debugging nur Zeit kosten würde. Wir sind überzeugt, dass wir durch diesen direkten Zugriff auf die Datenbankebene eine deutlich robustere Matching-Logik implementieren konnten, bei der wir genau wissen, was im Hintergrund passiert.
 
 ### Regarded options
 
-[Describe any possible design decision that will solve the problem. Assess these options, e.g., via a simple pro/con list.]
+Für die Datenhaltung haben wir zwei grundlegende Strategien gegenübergestellt, um die beste Basis für unser Projekt zu finden.
+
+Legende ||
+| :--- | :--- |
+|✅ Ideal    | Optimale Lösung |
+|⚠️ Neutral  |Technisch stark, aber für unser spezifisches Setup mit Nachteilen verbunden.|
+|❌ Kritisch | Hohes Risiko für Zeitplan oder Flexibilität.|
+
+Kriterium | Plain SQL (Gewählt) | SQLAlchemy (Alternative) |
+| :--- | :--- | :--- |
+| Kontrolle | ✅ Wir haben die volle Kontrolle über jede Abfrage.| ⚠️ SQL-Generierung oft intransparent.|
+| Lernkurve | ✅ Bestehendes SQL-Wissen sofort nutzbar/kein Zeitverlust | ❌ Erfordert Einarbeitung in eine komplexe neue Syntax, die uns Zeit kostet.|
+| Effizienz | ✅ Schnelle, direkte Umsetzung ohne unnötigen Framework-Ballast.| ✅ Hohe Automatisierung bei Standard-Tasks. |
+| Fehlersuche | ✅ Queries können wir 1:1 direkt in der SQL-Konsole prüfen. | ⚠️ Fehler verstecken sich oft hinter den Abstraktionsschichten des Mappers. |
+|Skalierung| ❌ DB-Wechsel braucht Syntax-Anpassung. | ✅ Vollkommen datenbankunabhängig.|
+
+Obwohl SQLAlchemy starke Vorteile bei der Automatisierung und Skalierbarkeit bietet, priorisierten wir für unser Projekt die direkte Kontrolle und Umsetzungsgeschwindigkeit.
+*Plain SQL ist für uns der sicherste Weg, um die spezifischen Anforderungen von Student-Talent-Match ohne Umwege und mit voller Transparenz umzusetzen.*
 
 ---
 
-## [Example, delete this section] 01: How to access the database - SQL or SQLAlchemy 
+## 02: Frontend-Design 
 
 ### Meta
 
@@ -48,45 +68,15 @@ Status
 : Work in progress - **Decided** - Obsolete
 
 Updated
-: 30-Jun-2024
+: 08-02-2026
 
 ### Problem statement
 
-Should we perform database CRUD (create, read, update, delete) operations by writing plain SQL or by using SQLAlchemy as object-relational mapper?
-
-Our web application is written in Python with Flask and connects to an SQLite database. To complete the current project, this setup is sufficient.
-
-We intend to scale up the application later on, since we see substantial business value in it.
-
-
-
-Therefore, we will likely:
-Therefore, we will likely:
-Therefore, we will likely:
-
-+ Change the database schema multiple times along the way, and
-+ Switch to a more capable database system at some point.
 
 ### Decision
 
-We stick with plain SQL.
-
-Our team still has to come to grips with various technologies new to us, like Python and CSS. Adding another element to our stack will slow us down at the moment.
-
-Also, it is likely we will completely re-write the app after MVP validation. This will create the opportunity to revise tech choices in roughly 4-6 months from now.
-*Decision was taken by:* github.com/joe, github.com/jane, github.com/maxi
 
 ### Regarded options
 
-We regarded two alternative options:
-
-+ Plain SQL
-+ SQLAlchemy
-
-| Criterion | Plain SQL | SQLAlchemy |
-| --- | --- | --- |
-| **Know-how** | ✔️ We know how to write SQL | ❌ We must learn ORM concept & SQLAlchemy |
-| **Change DB schema** | ❌ SQL scattered across code | ❔ Good: classes, bad: need Alembic on top |
-| **Switch DB engine** | ❌ Different SQL dialect | ✔️ Abstracts away DB engine |
 
 ---
