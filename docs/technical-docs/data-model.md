@@ -1,3 +1,10 @@
+---
+layout: default
+title: Datenmodell
+parent: Technical Docs
+nav_order: 2
+---
+
 
 # Datenmodell
 
