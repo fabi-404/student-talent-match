@@ -124,11 +124,15 @@ eines Standard-Frameworks kämpfen zu müssen.
 
 Wir haben abgewogen, was uns am schnellsten ans Ziel bringt, ohne die Optik zu opfern.
 
-Legende ||  
+**Legende**
+
+| Status | Bedeutung |
 | :--- | :--- |
-| ✅ Ideal | Optimale Lösung |
-| ⚠️ Neutral | Technisch okay, hat aber Nachteile für uns. |
-| ❌ Kritisch | Killt den Zeitplan oder die Flexibilität. |
+| ✅ **Ideal** | Optimale Lösung |
+| ⚠️ **Neutral** | Technisch okay, hat aber Nachteile für uns. |
+| ❌ **Kritisch** | Killt den Zeitplan oder die Flexibilität. |
+
+<br>
 
 | Kriterium | Tailwind CSS (Gewählt) | Bootstrap (Alternative) | Custom / Vanilla CSS |
 | :--- | :--- | :--- | :--- |
