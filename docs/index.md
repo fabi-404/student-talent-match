@@ -3,10 +3,7 @@ title: Home
 nav_order: 0
 ---
 
-{: .attention }
-> Any text enclosed by `[ ]` are placeholders, including the opening and closing brackets.
->
-> You may delete this `attention` box.
+
 
 # Student-Talent-Matcher
 
@@ -17,7 +14,7 @@ Der Student Talent Matcher ist eine mobile Anwendung, die Studierende und Absolv
 ### Fabian Patzer 
 
 About
-: Some info about Jane
+: Wirtschaftinformatik
 
 Matr.-Nr.
 : 77207789039
@@ -25,7 +22,7 @@ Matr.-Nr.
 ### Yusuf Can Uyar
 
 About
-: Some info about Joe
+: Wirtschaftinformatik
 
 Matr.-Nr.
 : 1234567
@@ -33,7 +30,7 @@ Matr.-Nr.
 ### Erik Wlochal
 
 About
-: Some info about Joe
+: Wirtschaftinformatik
 
 Matr.-Nr.
 : 77207303365
