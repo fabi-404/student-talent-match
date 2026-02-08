@@ -17,12 +17,11 @@ nav_order: 4
 {: toc }
 </details>
 
-## [Jane Dane]
+## Fabian Patzer
 
 Contributions
-: Lorem ipsum dolor
-: Consetetur sadipscing elitr
-: ...
+Backend Architecture & Integration (app.py): Übernahme der Hauptverantwortung für die zentrale Applikationslogik. Um eine konsistente Code-Struktur zu gewährleisten, wurde die Implementierung der Routen, Sessions und der Matching-Logik hier zentral zusammengeführt und finalisiert. Session-Management; "Swipe"- und Matching-Logik;
+Full-Stack Integration & Sicherheit: Zusammenführung der Frontend-Templates mit dem Backend sowie Implementierung der Sicherheitsfeatures (Login-System, login_required-Decorator, Passwort-Hashing).
 
 ## [Joe Doe]
 
