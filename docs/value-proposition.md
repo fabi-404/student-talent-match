@@ -4,7 +4,7 @@ nav_order: 1
 ---
 
 {: .label }
-[Jane Dane]
+[OSCORP]
 
 {: .no_toc }
 # Value proposition
@@ -63,4 +63,35 @@ Plattform hinterlegen.
 
 ## Customer journey
 
-[Illustrate the customer journey, from the app's entry point to a completed task. You might want to show the customer journey as (schematic) screen flows.]
+**1. Der Student-Flow**    
+
+*Einstieg:*   
+Der Student landet auf der Startseite und wählt „Start als Student“ oder loggt sich direkt ein.  
+-->
+*Registrierung:*   
+Über ein Formular gibt er seine Stammdaten an und setzt sein Passwort  
+-->
+*Profil:*  
+Im nächsten Schritt pflegt er seine spezifischen Skills und seine Kurz-Bio ein. Der Student kann entscheiden (per Häkchen) ob das Profil sichtbar oder privat sein soll.  
+-->*Match-Kontrolle:*  
+Im persönlichen Dashboard sieht der Student jederzeit den Status seiner Matches, sobald ein Arbeitgeber Interesse bekundet hat.  
+
+**2. Der Employer-Flow**    
+
+*Einstieg:*   
+Der Arbeitgeber registriert sich (Start als Unternehmen) oder loggt sich direkt in sein Dashboard ein.  
+-->
+*Filterung:*   
+Auf dem Dashboard nutzt er die Skill-Suche, um den Pool an Studenten nach benötigten Kompetenzen (z. B. "Python", "Flask") einzugrenzen.  
+-->
+*Swiping-Prozess:*   
+Der Arbeitgeber gelangt zur swipe Ansicht. Hier wird ihm das erste  Profil als Karte präsentiert.  
+-->
+*Interaktion:*   
+Durch die Tailwind-Hover-Effekte erhält er visuelles Feedback. Er entscheidet sich für "Gefällt mir" (Like) oder "Überspringen" (Pass).  
+-->
+*Match-Abschluss:*  
+Bei einem „Like“ wird das Profil in der Match-Historie gespeichert, und der Arbeitgeber kann nun eine (simulierte) Interview-Einladung auslösen.
+
+
+
