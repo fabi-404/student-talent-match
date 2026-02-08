@@ -5,7 +5,7 @@ nav_order: 4
 ---
 
 {: .label }
-[Jane Dane]
+
 
 {: .no_toc }
 # Summary of individual contributions
@@ -19,13 +19,11 @@ nav_order: 4
 
 ## Fabian Patzer
 
-Contributions
-Backend Architecture & Integration (app.py): Übernahme der Hauptverantwortung für die zentrale Applikationslogik. Um eine konsistente Code-Struktur zu gewährleisten, wurde die Implementierung der Routen, Sessions und der Matching-Logik hier zentral zusammengeführt und finalisiert. Session-Management; "Swipe"- und Matching-Logik;
+Contributions  
+**Backend Architecture & Integration (app.py):** Übernahme der Hauptverantwortung für die zentrale Applikationslogik. Um eine konsistente Code-Struktur zu gewährleisten, wurde die Implementierung der Routen, Sessions und der Matching-Logik hier zentral zusammengeführt und finalisiert. Session-Management; "Swipe"- und Matching-Logik;
 Full-Stack Integration & Sicherheit: Zusammenführung der Frontend-Templates mit dem Backend sowie Implementierung der Sicherheitsfeatures (Login-System, login_required-Decorator, Passwort-Hashing).
 
-## [Joe Doe]
+## Erik Wlochal 
 
-Contributions
-: Diam nonumy eirmod
-: Tempor invidunt ut labore
-: ...
+Contributions  
+**Backend & Datenmanagement** (app.py, database.py): Hauptverantwortung für das Datenbank-Fundament und die Datenverarbeitung. Erstellung des Entwurfs  (schema.sql) sowie das testen der Tabellenstrukturen mittels (test_table.py). Mit Implementierung der Registrierungs- und Login-Logik in der app.py unter Verwendung von Flask-Sessions zur Rollentrennung.  Absicherung der Nutzerdaten durch Passwort-Hashing innerhalb des Registrierungsprozesses. Datenbank-Anbindung & Query-Logik: Entwicklung der SQL-Abfragen zur Bereitstellung gefilterter Profile sowie die mit Implementierung der Skill-Verarbeitung in app.py.
