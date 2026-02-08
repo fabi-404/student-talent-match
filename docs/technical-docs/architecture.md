@@ -5,24 +5,10 @@ nav_order: 1
 ---
 
 {: .label }
-[Jane Dane]
+
 
 {: .no_toc }
 # Architecture
-
-{: .attention }
-> This page describes how the application is structured and how important parts of the app work. It should give a new-joiner sufficient technical knowledge for contributing to the codebase.
-> 
-> See [this blog post](https://matklad.github.io/2021/02/06/ARCHITECTURE.md.html) for an explanation of the concept and these examples:
->
-> + <https://github.com/rust-lang/rust-analyzer/blob/master/docs/dev/architecture.md>
-> + <https://github.com/Uriopass/Egregoria/blob/master/ARCHITECTURE.md>
-> + <https://github.com/davish/obsidian-full-calendar/blob/main/src/README.md>
-> 
-> For structural and behavioral illustration, you might want to leverage [Mermaid](../ui-components.md), e.g., by charting common [C4](https://c4model.com/) or [UML](https://www.omg.org/spec/UML) diagrams.
-> 
->
-> You may delete this `attention` box.
 
 <details open markdown="block">
 {: .text-delta }
@@ -33,12 +19,67 @@ nav_order: 1
 
 ## Overview
 
-[Give a high-level overview of what your app does and how it achieves it: similar to the value proposition, but targeted at a fellow developer who wishes to contribute.]
+**Student-Talent-Matcher**
+
+Student-Talent-Matcher ist eine Recruiting-Plattform, die Studierende dabei unterstützt, passende berufliche Einstiegsmöglichkeiten zu finden und praktische Erfahrungen zu sammeln.  
+Die Anwendung ermöglicht es Studierenden, anonymisierte oder öffentliche Profile mit ihren individuellen Skills zu erstellen, während Arbeitgeber diesen Talent-Pool mithilfe spezifischer Filterkriterien gezielt durchsuchen können.
+
+**Technische Umsetzung**
+
+Die Plattform basiert auf einem **Flask-Backend**, das serverseitig mit **Jinja2-Templates** und **Tailwind CSS** gerendert wird.  
+Die Datenpersistenz erfolgt über eine lokale **SQLite-Datenbank**.  
+Die eindeutige Zuordnung der Benutzerrollen (**Studierende** und **Arbeitgeber**) wird über ein **Session-Management** realisiert.
 
 ## Codemap
 
-[Describe how your app is structured. Don't aim for completeness, rather describe *just* the most important parts.]
+Die Anwendung folgt dem klassischen **Flask-Architekturpattern** mit einer klaren Trennung der Verantwortlichkeiten:
+
+* **app.py**  
+  Zentraler Einstiegspunkt der Anwendung.  
+  Verantwortlich für Routing, Session-Management sowie die Steuerung der Interaktion zwischen **WTForms** und der Datenbank.
+
+* **schema.sql**  
+  Definition des Datenbankschemas.  
+  Enthält unter anderem die Tabellen:
+  - `Student` & `Employer` 
+  - `Swipe` (Persistenz der Like-/Pass-Entscheidungen)  
+
+* **database.py**
+  Der Code dient der Initialisierung und Verwaltung der SQLite-Datenbank für die Anwendung **Student-Talent-Matcher** und stellt sicher, dass diese vor der    Nutzung korrekt erstellt und konfiguriert wird. --> `student_talent.db`
+
+* **forms.py**  
+  Beinhaltet die **WTForms-Definitionen** für Registrierung und Profilerstellung.  
+  Enthält Validierungsregeln zur Sicherstellung konsistenter Eingaben.
+
+* **templates/**  
+  Enthält alle **Jinja2-Templates** für die serverseitige Darstellung.  
+  Besonders relevant:
+  * Rollenspezifische Dashboards für Studierende und Arbeitgeber     
+  
+Alle Templates nutzen konsequent **Tailwind-Utility-Classes**, um ein responsives und konsistentes Design zu gewährleisten. Interaktive Elemente wie Hover-Effekte werden ausschließlich über CSS umgesetzt, sodass vollständig auf clientseitiges JavaScript verzichtet werden kann und die vorgegebenen technischen Rahmenbedingungen eingehalten werden.
+
+
 
 ## Cross-cutting concerns
 
-[Describe anything that is important for a solid understanding of your codebase. Most likely, you want to explain the behavior of (parts of) your application. In this section, you may also link to important [design decisions](../design-decisions.md).]
+**Authentifizierung & Zugriffskontrolle**
+- Trennung der Benutzerrollen **Student** und **Employer**
+- Zugriffsschutz über einen `@login_required`-Decorator
+- Session-Management zur Speicherung von Login-Status und Rolle
+
+**Datenbank-Interaktion**
+- Direkter Datenbankzugriff mit **Plain SQL** (ohne ORM)
+- Zentrale Helper-Funktion für Verbindungen zur SQLite-Datenbank
+- Nutzung von `sqlite3.Row` für besser lesbaren Code
+- Explizite Transaktionskontrolle mittels `commit()`
+
+**User Feedback**
+- Nutzerfeedback über **Flask Flash Messages**
+- Zentrale Darstellung im Base-Template
+- Visuelles Feedback durch Tailwind-gestylte Alert-Boxen
+
+**Sicherheit**
+- Keine Klartext-Passwörter
+- Passwort-Hashing mit `werkzeug.security`
+- Sichere Validierung beim Login
+
