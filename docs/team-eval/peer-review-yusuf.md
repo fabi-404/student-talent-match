@@ -30,7 +30,7 @@ Deine Arbeitsweise hat mir extrem viel Vertrauen gegeben. Zu sehen, wie du das B
 ### Tip for the future (Wunsch)
 
 Behalte dir diesen Mix aus technischem Know-how und deiner geduldigen Art zu erklären unbedingt bei. Das ist eine riesige Qualität die du in kommenden Projekten einbringen kannst. Für die Zukunft wünsche ich dir, dass du weiterhin so proaktiv an die Themen herangehst und deine Begeisterung so beibehältst.  
---- 
+
 
 ## Yusuf Can Uyar - review 2
 
