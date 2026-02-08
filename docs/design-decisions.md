@@ -9,84 +9,227 @@ nav_order: 3
 {: .no_toc }
 # Design decisions
 
-<details open markdown="block">
+## Table of contents
 {: .text-delta }
-<summary>Table of contents</summary>
-+ ToC
-{: toc }
-</details>
 
-## 01: [Title]
+- TOC
+{:toc}
 
-### Meta
+## 01: Wahl des Datenbank-Zugriffs 
 
-Status
-: **Work in progress** - Decided - Obsolete
-
-Updated
-: DD-MMM-YYYY
+Status  
+: **entschieden**  
+Updated  
+: 08-02-2026
 
 ### Problem statement
 
-[Describe the problem to be solved or the goal to be achieved. Include relevant context information.]
+Im Rahmen der Entwicklung von "Student-Talent-Match" stehen wir vor der Herausforderung,
+ein Datenmodell zu implementieren, das die Dynamik einer Recruiting-Plattform
+(Nutzerprofile, Skill-Sets, Swipe-Logik und Interview-Einladungen) stabil abbildet.
+
+Da unsere Web-App auf Python/Flask und SQLite basiert, ist die zentrale Frage,
+wie wir die Interaktion zwischen der Anwendungslogik und der Datenhaltung gestalten.
+
+Konkret müssen wir entscheiden, ob wir ein **Object-Relational Mapping (ORM)**
+wie SQLAlchemy einsetzen oder die Datenbank-Operationen (CRUD) über **Plain SQL**
+abwickeln.
+
+Wir brauchten eine Lösung, die maximale Kontrolle bei minimalem technischem Overhead bietet.
 
 ### Decision
 
-[Describe **which** design decision was taken for **what reason** and by **whom**.]
+Wir entschieden uns bewusst für **Plain SQL**.
+
+Diese Strategie gibt uns die maximale Transparenz, die wir für unser Matching-System brauchen.
+
+Da das Filtern von Talenten nach spezifischen Skills das Herzstück unserer App ist,
+wollen wir die volle Kontrolle über jede einzelne Query behalten, anstatt uns auf die
+automatische Generierung eines ORMs zu verlassen.
+
+Durch den Verzicht auf SQLAlchemy halten wir den Technologie-Stack schlank und vermeiden
+eine "Blackbox", die uns beim Debugging nur Zeit kosten würde.
+
+Wir sind überzeugt, dass wir durch diesen direkten Zugriff auf die Datenbankebene
+eine deutlich robustere Matching-Logik implementieren konnten, bei der wir genau wissen,
+was im Hintergrund passiert.
 
 ### Regarded options
 
-[Describe any possible design decision that will solve the problem. Assess these options, e.g., via a simple pro/con list.]
+Für die Datenhaltung haben wir zwei grundlegende Strategien gegenübergestellt,
+um die beste Basis für unser Projekt zu finden.
+
+Legende ||  
+| :--- | :--- |
+| ✅ Ideal | Optimale Lösung |
+| ⚠️ Neutral | Technisch stark, aber für unser spezifisches Setup mit Nachteilen verbunden. |
+| ❌ Kritisch | Hohes Risiko für Zeitplan oder Flexibilität. |
+
+| Kriterium | Plain SQL (Gewählt) | SQLAlchemy (Alternative) |
+| :--- | :--- | :--- |
+| Kontrolle | ✅ Wir haben die volle Kontrolle über jede Abfrage. | ⚠️ SQL-Generierung oft intransparent. |
+| Lernkurve | ✅ Bestehendes SQL-Wissen sofort nutzbar/kein Zeitverlust | ❌ Erfordert Einarbeitung in eine komplexe neue Syntax, die uns Zeit kostet. |
+| Effizienz | ✅ Schnelle, direkte Umsetzung ohne unnötigen Framework-Ballast. | ✅ Hohe Automatisierung bei Standard-Tasks. |
+| Fehlersuche | ✅ Queries können wir 1:1 direkt in der SQL-Konsole prüfen. | ⚠️ Fehler verstecken sich oft hinter den Abstraktionsschichten des Mappers. |
+| Skalierung | ❌ DB-Wechsel braucht Syntax-Anpassung. | ✅ Vollkommen datenbankunabhängig. |
+
+Obwohl SQLAlchemy starke Vorteile bei der Automatisierung und Skalierbarkeit bietet,
+priorisierten wir für unser Projekt die direkte Kontrolle und Umsetzungsgeschwindigkeit.
+
+*Plain SQL ist für uns der sicherste Weg, um die spezifischen Anforderungen von
+Student-Talent-Match ohne Umwege und mit voller Transparenz umzusetzen.*
 
 ---
 
-## [Example, delete this section] 01: How to access the database - SQL or SQLAlchemy 
+## 02: Frontend-Design
 
-### Meta
-
-Status
-: Work in progress - **Decided** - Obsolete
-
-Updated
-: 30-Jun-2024
+Status  
+: **entschieden**  
+Updated  
+: 08-02-2026
 
 ### Problem statement
 
-Should we perform database CRUD (create, read, update, delete) operations by writing plain SQL or by using SQLAlchemy as object-relational mapper?
+Bei der Entwicklung des Frontends standen wir vor einer ganz praktischen Frage:
+Wie bauen wir eine Oberfläche, die sich gut anfühlt (besonders die Swipe-Funktion auf dem Handy),
+ohne dass wir uns technisch verrennen?
 
-Our web application is written in Python with Flask and connects to an SQLite database. To complete the current project, this setup is sufficient.
+Da unser Projekt-Fokus klar auf dem Python-Backend liegt, wollten wir uns nicht
+mit komplexen JavaScript-Build-Tools (wie Node.js, Webpack oder npm) belasten.
+Wir brauchten eine Styling-Lösung, mit der wir schnell sichtbare Ergebnisse erzielen ("Rapid Prototyping"),
+ohne stundenlang in separaten CSS-Dateien Fehler zu suchen.
 
-We intend to scale up the application later on, since we see substantial business value in it.
-
-
-
-Therefore, we will likely:
-Therefore, we will likely:
-Therefore, we will likely:
-
-+ Change the database schema multiple times along the way, and
-+ Switch to a more capable database system at some point.
+Die Wahl stand zwischen:
+1. Einem fertigen Baukasten (Bootstrap) nehmen und hoffen, dass es nicht zu langweilig aussieht.
+2. Alles von Hand selbst schreiben (Custom CSS) und viel Zeit investieren.
+3. Einen modernen Mittelweg finden (Utility-First).
 
 ### Decision
 
-We stick with plain SQL.
+Wir haben uns für **Tailwind CSS** (via CDN) entschieden.
 
-Our team still has to come to grips with various technologies new to us, like Python and CSS. Adding another element to our stack will slow us down at the moment.
+Der Grund ist simpel: Der "Utility-First"-Ansatz macht die Entwicklung extrem schnell.
+Wir schreiben das Design direkt in unsere HTML-Templates (Jinja2). Das spart uns das
+ständige Hin- und Herspringen zwischen HTML- und CSS-Dateien. Man sieht sofort, was passiert.
 
-Also, it is likely we will completely re-write the app after MVP validation. This will create the opportunity to revise tech choices in roughly 4-6 months from now.
-*Decision was taken by:* github.com/joe, github.com/jane, github.com/maxi
+Ein riesiger Pluspunkt für unser Setup war die einfache Einbindung über einen CDN-Link.
+Das hält unser Projekt sauber: Wir brauchen keine riesigen `node_modules`-Ordner oder
+komplizierte Build-Pipelines. Wir bleiben bei Python, HTML und einem Link im Header.
+
+Außerdem gab uns Tailwind die Freiheit, unsere speziellen "Swipe-Karten" für die Arbeitgeber
+genau so zu gestalten, wie wir sie im Kopf hatten – ohne gegen die starren Vorgaben
+eines Standard-Frameworks kämpfen zu müssen.
 
 ### Regarded options
 
-We regarded two alternative options:
+Wir haben abgewogen, was uns am schnellsten ans Ziel bringt, ohne die Optik zu opfern.
 
-+ Plain SQL
-+ SQLAlchemy
+**Legende**
 
-| Criterion | Plain SQL | SQLAlchemy |
+| Status | Bedeutung |
+| :--- | :--- |
+| ✅ **Ideal** | Optimale Lösung |
+| ⚠️ **Neutral** | Technisch okay, hat aber Nachteile für uns. |
+| ❌ **Kritisch** | Killt den Zeitplan oder die Flexibilität. |
+
+<br>
+
+| Kriterium | Tailwind CSS (Gewählt) | Bootstrap (Alternative) | Custom / Vanilla CSS |
+| :--- | :--- | :--- | :--- |
+| Individualität | ✅ **Hoch**: Wir bauen genau das Design, das wir wollen. Kein Einheitsbrei. | ⚠️ **Mittel**: Sieht oft sehr generisch ("nach Baukasten") aus. | ✅ **Maximal**: Alles geht, aber man muss jedes Detail selbst erfinden. |
+| Tempo | ✅ **Sehr schnell**: Klassen direkt ins HTML schreiben, fertig. | ✅ **Schnell**: Fertige Komponenten (wie Navbars) sparen anfangs Zeit. | ❌ **Langsam**: Jedes Layout und jede Handy-Ansicht muss manuell programmiert werden. |
+| Komplexität | ✅ **Minimal (CDN)**: Ein Link im Header reicht. Perfekt für uns. | ✅ **Minimal**: Auch einfach via CDN möglich. | ⚠️ **Mittel**: Keine Tools nötig, aber der Code wird schnell unübersichtlich ("Spaghetti-CSS"). |
+| Responsivität | ✅ **Mobile-First**: Super einfach, Dinge auf dem Handy anders aussehen zu lassen. | ✅ **Gut**: Solides Raster, aber manchmal unflexibel bei Details. | ❌ **Aufwendig**: Media-Queries müssen mühsam von Hand geschrieben werden. |
+
+Bootstrap wäre zwar der bequemste Start gewesen, aber wir wollten nicht, dass unsere App
+aussieht wie jede andere Standard-Seite. Alles selbst zu schreiben (Custom CSS) hätte
+einfach zu lange gedauert.
+
+*Tailwind CSS war für uns der "Sweetspot": Die Geschwindigkeit eines Frameworks,
+aber mit der Freiheit, es genau so aussehen zu lassen, wie wir wollen.*
+---
+
+---
+
+## 03: Filter-Strategie (Soft-Matching vs. Hard-Matching)
+
+**Status**
+: **entschieden**
+
+**Updated**
+: 08-02-2026
+
+### Problem statement
+
+Ein Arbeitgeber wählt im Filter-Dashboard oft mehrere gewünschte Fähigkeiten gleichzeitig aus (z. B. "Python" und "SQL" und "Englisch").
+
+Wir mussten definieren, wie die Datenbank diese Anfrage interpretiert:
+
+1. **Strict/Hard Matching (AND):** Zeige nur Studenten, die **alle** gewählten Skills besitzen.
+2. **Soft Matching (OR):** Zeige alle Studenten, die **mindestens einen** der gewählten Skills besitzen.
+
+Das Problem: In der Startphase der App (wenig Nutzerdaten) führt eine strikte "AND"-Logik sehr schnell zu "0 Treffern", was für den Arbeitgeber frustrierend ist ("Die App funktioniert nicht").
+
+### Decision
+
+Wir haben uns für das **Soft-Matching (OR-Logik)** entschieden.
+
+Im Backend setzen wir dies durch eine SQL `IN`-Abfrage um:
+
+```python
+query += f" AND s.id IN (SELECT student_id FROM Student_Skill WHERE skill_id IN ({placeholders}))"
+
+```
+
+Das bedeutet: Wählt ein Arbeitgeber 5 Skills aus, erweitern wir den Suchradius, statt ihn zu verengen. Wir priorisieren, dass der Arbeitgeber *überhaupt* Kandidaten sieht (Quantität), auch wenn diese vielleicht nur 50% der Anforderungen erfüllen. Das passt besser zu unserem "Swipe"-Ansatz, der auf schnelle visuelle Bewertung setzt, anstatt auf eine präzise Datenbank-Abfrage wie bei klassischen Jobportalen.
+
+### Regarded options
+
+| Kriterium | Soft-Matching / OR (Gewählt) | Hard-Matching / AND (Alternative) |
 | --- | --- | --- |
-| **Know-how** | ✔️ We know how to write SQL | ❌ We must learn ORM concept & SQLAlchemy |
-| **Change DB schema** | ❌ SQL scattered across code | ❔ Good: classes, bad: need Alembic on top |
-| **Switch DB engine** | ❌ Different SQL dialect | ✔️ Abstracts away DB engine |
+| **Ergebnis-Menge** | ✅ **Hoch**: Der User bekommt fast immer Profile zum Swipen angezeigt. | ❌ **Niedrig**: Hohes Risiko für "Leere Ergebnisse" (Zero Results), besonders bei vielen ausgewählten Filtern. |
+| **Relevanz** | ⚠️ **Mittel**: Es tauchen auch Kandidaten auf, die nur 1 von 5 Kriterien erfüllen. | ✅ **Hoch**: Die Kandidaten passen perfekt auf das Profil. |
+| **SQL-Komplexität** | ✅ **Gering**: Einfaches `WHERE id IN (...)`. | ⚠️ **Mittel**: Erfordert komplexere Aggregation (`GROUP BY ... HAVING COUNT = X`). |
+| **User Experience** | ✅ **Flüssig**: Der "Swipe-Flow" bricht nicht ab. | ❌ **Stockend**: User muss ständig Filter lockern, um Ergebnisse zu sehen. |
 
----
+*Wir haben uns hier bewusst für die **Vermeidung von leeren Ergebnislisten** entschieden, um die Interaktion auf der Plattform in der frühen Phase am Laufen zu halten.*
+
+
+
+## 04: Algorithmus zur Kandidaten-Auswahl (Zufall vs. Relevanz-Score)
+
+**Status**
+: **entschieden**
+
+**Updated**
+: 08-02-2026
+
+### Problem statement
+
+Nachdem ein Arbeitgeber Filter gesetzt hat (z. B. "Java" und "SQL"), bleibt oft eine Liste von mehreren potenziellen Kandidaten übrig. Die Frage war: **In welcher Reihenfolge** zeigen wir diese Profile an?
+
+In vielen Recruiting-Plattformen gibt es komplexe "Relevanz-Scores" (z. B. "95% Match"), die Kandidaten nach der Anzahl der Treffer sortieren. Da wir jedoch ein "Swipe"-Interface nutzen (immer nur *ein* Profil gleichzeitig sichtbar), hat die Reihenfolge einen enormen Einfluss darauf, ob ein Kandidat überhaupt gesehen wird.
+
+### Decision
+
+Wir haben uns für eine rein **zufällige Sortierung (`ORDER BY RANDOM()`)** entschieden.
+
+Im Code (`app.py`) wird dies so umgesetzt:
+
+```python
+query += " ORDER BY RANDOM() LIMIT 1"
+
+```
+
+Anstatt zu versuchen, den "perfekten" Kandidaten mathematisch zu berechnen, würfeln wir die Ergebnisse bei jedem Aufruf neu. Das verhindert, dass immer dieselben "Top-Performer" als Erstes erscheinen und gewährleistet eine faire Verteilung der Sichtbarkeit für alle Studenten, die die Grundkriterien erfüllen.
+
+### Regarded options
+
+| Kriterium | Zufalls-Prinzip (Gewählt) | Relevanz-Score (Verworfen) |
+| --- | --- | --- |
+| **Fairness** | ✅ **Hoch**: Jeder Student hat die gleiche Chance, gesehen zu werden. | ⚠️ **Mittel**: "Schwächere" Profile landen immer ganz hinten und werden nie geswiped. |
+| **Implementierung** | ✅ **Trivial**: Standard SQL-Funktion. | ❌ **Komplex**: Erfordert Algorithmus, der Treffer gewichtet und sortiert. |
+| **User Experience** | ✅ **Abwechslungsreich**: Der Arbeitgeber sieht bei jedem Login neue Gesichter. | ⚠️ **Statisch**: Die Liste sieht immer gleich aus, bis die Top-Kandidaten bearbeitet sind. |
+| **Performance** | ⚠️ **Mittel**: `ORDER BY RANDOM()` kann bei riesigen Datenmengen langsam sein (für unser MVP aber vernachlässigbar). | ✅ **Hoch**: Indexierte Sortierung ist schneller. |
+
+*Wir haben uns hier gegen einen elitären Ansatz entschieden. In einem MVP ist es wichtiger, Entdeckungen zu fördern ("Serendipity"), als eine pseudo-genaue Passgenauigkeit vorzugaukeln. Dafür haben wir den Match Score an anderer Stelle verwendet um dem Arbeitgeber direkt anzuzeigen wie viel Prozent der Skills erfüllt sind*

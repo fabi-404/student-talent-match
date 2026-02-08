@@ -18,15 +18,48 @@ nav_order: 1
 
 ## The problem
 
-[Describe which problem your application tackles and why it is relevant.]
 
-## Our solution
+**Die Herausforderung:** Orientierungslosigkeit und verpasste Chancen
 
-[Describe why and how your app solves the stated problem. Don't over-promise: the description should match what your app actually delivers.]
+Der Übergang von der Uni in den ersten IT-Job ist für beide Seiten oft mühsam und unübersichtlich:
 
-## Target user
+**Die Sichtbarkeits-Hürde:**  
+Viele Studierende wissen nicht, welche ihrer Uni-Projekte oder Vorlesungen für die Praxis wirklich zählen. Auf großen Jobbörsen gehen ihre Profile unter, weil sie dort nicht gezielt zeigen können, was sie technisch draufhaben.
 
-[Scope your target user(s), e.g., with the help of personas.]
+**Der Filter-Aufwand:**  
+Unternehmen müssen sich durch Berge von Bewerbungen wühlen, die oft nicht auf die Stelle passen. Dabei werden qualifizierte Talente oft übersehen, nur weil sie nicht in das klassische Raster der Recruiter passen.
+
+**Die Bewerbungs-Bremse:**  
+Klassische Bewerbungen mit Anschreiben sind zeitaufwendig und frustrierend. Es fehlt eine einfache Möglichkeit, schnell zu prüfen, ob die eigenen Skills und die Anforderungen der Firma überhaupt zusammenpassen.
+
+**Die Konsequenz:** 
+Eine Lose-lose-Situation  
+Es entsteht eine doppelte Ineffizienz: Studierende bewerben sich „auf gut Glück“ ohne echte Erfolgsaussichten, während IT-Unternehmen motivierte   Nachwuchskräfte verpassen, die eigentlich perfekt passen würden.
+
+## Our solution  
+
+Die App **"Student-Talent-Matcher"** soll als Brücke zwischen Student und Arbeitgeber dienen. 
+
+🎯 **Fähigkeiten-Erfassung:**  
+Studierende geben ihre Skills und Uni-Projekte (z. B. „Datenbanken (SQL)“) sowie optional eine kurze Biografie ein.  
+
+🤝 **Einfaches Matching:**  
+Unternehmen hinterlegen die gewünschten Skills und erhalten darauf basierend eine gefilterte Auswahl passender Studierender.  
+
+🎮 **Intuitives Erlebnis:**  
+Durch das „Swipe-Prinzip“ wird der Recruiting-Prozess beschleunigt und für beide Seiten spielerisch einfach gestaltet.  
+
+
+## Target user  
+
+**Studierende / Absolventen:**  
+Studierende aus den Bereichen Informatik, Wirtschaftsinformatik und verwandten Studiengängen, die Praktika, Werkstudentenstellen oder ihren ersten Berufseinstieg suchen.  
+
+**Arbeitgeber:**  
+Unternehmen, die gezielt nach qualifizierten Studierenden oder Absolventen für Einstiegspositionen suchen und die benötigten Skills für die Stellen in der  
+Plattform hinterlegen.
+
+
 
 ## Customer journey
 
