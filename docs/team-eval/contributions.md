@@ -30,7 +30,7 @@ Contributions
 
 ## Yusuf Can Uyar
 
-Contributions
-: **Frontend-Architektur & Design-System:** Gesamtverantwortung für das visuelle Konzept und die technische Umsetzung des Frontends mittels Tailwind CSS (Utility-First). Entwicklung der modularen Template-Struktur (`base.html`), um ein konsistentes und responsives Layout für Desktop und Mobile sicherzustellen.
-: **UX-Design & Interaktionslogik:** Implementierung der zentralen "Active Sourcing"-Logik im Frontend, insbesondere des interaktiven Swipe-Dashboards für Arbeitgeber (`card_view_swipe.html`) und der Match-Übersicht für Studenten.
-: **Template-Integration & Usability:** Verknüpfung der Backend-Daten mit Jinja2-Templates sowie Gestaltung benutzerfreundlicher Formulare (Flask-WTF) inklusive visuellem Feedback-System (Flash-Messages) und Error-Handling.
+Contributions  
+**Frontend-Architektur & Design-System:** Gesamtverantwortung für das visuelle Konzept und die technische Umsetzung des Frontends mittels Tailwind CSS (Utility-First). Entwicklung der modularen Template-Struktur (`base.html`), um ein konsistentes und responsives Layout für Desktop und Mobile sicherzustellen.  
+**UX-Design & Interaktionslogik:** Implementierung der zentralen "Active Sourcing"-Logik im Frontend, insbesondere des interaktiven Swipe-Dashboards für Arbeitgeber (`card_view_swipe.html`) und der Match-Übersicht für Studenten.  
+**Template-Integration & Usability:** Verknüpfung der Backend-Daten mit Jinja2-Templates sowie Gestaltung benutzerfreundlicher Formulare (Flask-WTF) inklusive visuellem Feedback-System (Flash-Messages) und Error-Handling.
