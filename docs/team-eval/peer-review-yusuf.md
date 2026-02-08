@@ -30,17 +30,18 @@ Deine Arbeitsweise hat mir extrem viel Vertrauen gegeben. Zu sehen, wie du das B
 ### Tip for the future (Wunsch)
 
 Behalte dir diesen Mix aus technischem Know-how und deiner geduldigen Art zu erklären unbedingt bei. Das ist eine riesige Qualität die du in kommenden Projekten einbringen kannst. Für die Zukunft wünsche ich dir, dass du weiterhin so proaktiv an die Themen herangehst und deine Begeisterung so beibehältst.  
+--- 
 
 ## Yusuf Can Uyar - review 2
 
 ### My observation (Wahrnehmung)
 
-[A specific observation, regarding know-how, effectiveness, team work or from another relevant area]
+Ich habe beobachtet, dass du dich mit beeindruckendem Elan in die Frontend-Entwicklung (Tailwind CSS & Jinja2) eingearbeitet hast. Du hast nicht nur Designs umgesetzt, sondern aktiv mitgedacht, wie man die Backend-Daten – etwa beim Swipe-Dashboard oder den Filtern – am besten für den User aufbereitet. Besonders deine saubere Strukturierung der Templates (`base.html`) ist mir positiv aufgefallen, da sie das gesamte Projekt sehr wartbar gemacht hat. Auch bei kniffligen Darstellungsfragen warst du immer sofort bereit, eine Lösung zu finden.
 
 ### Effect on me (Wirkung)
 
-[What positive or negative effect did this observation have on the reviewer?]
+Deine Arbeit hat unserem Backend erst das richtige "Gesicht" gegeben. Es war extrem motivierend zu sehen, wie die trockene Datenbank-Logik in deinem Interface zu einem echten, benutzbaren Produkt wurde. Da ich mich voll darauf verlassen konnte, dass das Frontend stabil steht und responsive funktioniert, hatte ich den Kopf frei, mich auf die komplexen Backend-Funktionen zu konzentrieren. Deine Zuverlässigkeit im Frontend hat mir viel Stress in der Integrationsphase erspart.
 
 ### Tip for the future (Wunsch)
 
-[What should be changed or strengthened for the point of view of the reviewer?]
+Du hast ein offensichtliches Talent für User Experience (UX) und die Brücke zwischen Design und Code. Ich wünsche mir für die Zukunft, dass du dieses "Full-Stack-Denken" beibehältst und in kommenden Projekten vielleicht sogar noch früher die UX-Führung übernimmst, da dein Gespür für den Nutzerfluss uns sehr geholfen hat die richtigen Prioritäten zu setzen. 
