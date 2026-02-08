@@ -30,14 +30,16 @@ Behalte dir diese strukturierte Arbeitsweise und den Blick für stetige Verbesse
 
 ## Erik Wlochal - review 
 
+## [Dein Name] - review
+
 ### My observation (Wahrnehmung)
 
-[A specific observation, regarding know-how, effectiveness, team work or from another relevant area]
+Ich habe wahrgenommen, dass du eine sehr solide Basis für unser Projekt gelegt hast, indem du das Datenbank-Schema (`schema.sql`) und die Test-Skripte (`test_tables.py`) frühzeitig und fehlerfrei bereitgestellt hast. Was mich aber besonders gefreut hat: Du hast dich nicht auf der Datenbank-Rolle ausgeruht, sondern dich aktiv in die Backend-Entwicklung eingebracht. Du hast mich bei der Implementierung der `app.py` – speziell bei den Datenbank-Abfragen für die Filter und dem Login-Check – tatkräftig unterstützt und oft direkt im Python-Code mitgearbeitet.
 
 ### Effect on me (Wirkung)
 
-[What positive or negative effect did this observation have on the reviewer?]
+Dass ich mich blind auf die Stabilität der Datenbank verlassen konnte, hat mir extrem den Rücken freigehalten. Gleichzeitig hat mich deine Unterstützung beim Programmieren der App-Logik stark entlastet. Es war ein super Gefühl, bei komplexen SQL-Queries in den Routen nicht allein zu sein, sondern jemanden zu haben, der die Datenstruktur in- und auswendig kennt und mir hilft, die richtigen Abfragen in Python zu bauen. Dadurch waren wir im Backend deutlich schneller fertig als geplant.
 
 ### Tip for the future (Wunsch)
 
-[What should be changed or strengthened for the point of view of the reviewer?]
+Deine Balance aus eigenem Expertenwissen (Datenbank) und flexibler Team-Unterstützung war für dieses Projekt genau richtig. Wir haben uns blind verstanden, und ich würde mir wünschen, dass wir in zukünftigen Projekten genau so reibungslos wieder zusammenarbeiten können. Bleib einfach genau so zuverlässig und unkompliziert, wie du bist!
