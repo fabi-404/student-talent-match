@@ -487,9 +487,30 @@ def debug_interviews():
 # Arbeitgeber: Übersicht
 
 @app.route('/employer/matches')
-@login_required ## login requird decorator##    
+@login_required 
 def employer_matches():
-    return render_template('employer_matches.html')
+    employer_id = session.get('employer_id')
+    
+    # Check: Ist es wirklich ein Arbeitgeber?
+    if not employer_id:
+        flash("Nur für Arbeitgeber.", "warning")
+        return redirect(url_for('index'))
+
+    conn = get_db_connection()
+    
+    # Wir holen alle Studenten, die dieser Arbeitgeber eingeladen hat
+    query = """
+        SELECT i.sent_at, i.status, i.message,
+               s.full_name, s.university, s.email, s.bio
+        FROM interviews i
+        JOIN Student s ON i.student_id = s.id
+        WHERE i.employer_id = ?
+        ORDER BY i.sent_at DESC
+    """
+    matches = conn.execute(query, (employer_id,)).fetchall()
+    conn.close()
+
+    return render_template('employer_matches.html', matches=matches)
 
 
 @app.route('/employer/invite/<int:student_id>', methods=['POST'])
