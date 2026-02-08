@@ -513,13 +513,6 @@ def employer_matches():
     return render_template('employer_matches.html', matches=matches)
 
 
-@app.route('/employer/invite/<int:student_id>', methods=['POST'])
-@login_required ## login requird decorator##
-def send_invite(student_id):
-    # später: Einladung hinterlegen
-    return redirect(url_for('employer_matches'))
-
-
 #
 # Fehlerseiten
 # 
