@@ -10,13 +10,6 @@ nav_order: 3
 {: .no_toc }
 # Reference documentation
 
-{: .attention }
-> This page collects internal functions, routes with their functions, and APIs (if any).
-> 
-> See [Uber](https://developer.uber.com/docs/drivers/references/api) or [PayPal](https://developer.paypal.com/api/rest/) for exemplary high-quality API reference documentation.
->
-> You may delete this `attention` box.
-
 <details open markdown="block">
 {: .text-delta }
 <summary>Table of contents</summary>
@@ -57,6 +50,20 @@ Renders template `frontpage.html` (Landing Page mit zwei Call-to-Action Buttons)
 <img width="1057" height="850" alt="image" src="https://github.com/user-attachments/assets/426baf7c-e52c-4d93-bbb2-b654c219b9dd" />
 
 
+### `register_student()`
+
+**Route:** `/register/student`
+
+**Methods:** `GET` `POST`
+
+**Purpose:** Registriert einen neuen Studenten. Validiert die Formulardaten, hasht das Passwort und legt einen neuen Eintrag in der Tabelle `Student` an.
+
+**Sample output:**
+Renders template `register_student.html` (Registrierungsformular für Studenten).
+
+<img width="1063" height="852" alt="image" src="https://github.com/user-attachments/assets/36364a94-42c0-48ee-97de-1c47cd851402" />
+
+
 ---
 
 ### `login_student()`
@@ -72,7 +79,6 @@ Renders template `login_student.html` und leitet weiter zum Profil.
 
 <img width="1062" height="850" alt="image" src="https://github.com/user-attachments/assets/be210413-d7a9-46a3-947a-652f25c3d4f9" />
 
-
 ---
 
 ### `register_employer()`
@@ -85,9 +91,36 @@ Renders template `login_student.html` und leitet weiter zum Profil.
 
 **Sample output:**
 Renders template `register_employer.html`.
+
 <img width="1058" height="850" alt="image" src="https://github.com/user-attachments/assets/9b165815-3851-48e9-9d01-1cb589b16c07" />
 
+---
+### `login_employer()`
 
+**Route:** `/login/employer`
+
+**Methods:** `GET` `POST`
+
+**Purpose:** Validiert die Anmeldedaten des Arbeitgebers gegen die Tabelle `Employer`. Bei Erfolg wird die Session mit `employer_id` und `employer_name` gesetzt.
+
+**Sample output:**
+Renders template `login_employer.html`.
+
+<img width="1061" height="854" alt="image" src="https://github.com/user-attachments/assets/d3f3e660-e32f-4521-959a-3b770030b430" />
+
+
+---
+
+### `logout()`
+
+**Route:** `/logout`
+
+**Methods:** `GET`
+
+**Purpose:** Beendet die aktuelle Sitzung (`session.clear()`), zeigt eine Flash-Nachricht an und leitet den Nutzer zurück zur Startseite.
+
+**Sample output:**
+Redirects to `/` (Startseite).
 ---
 
 ## Student Module
@@ -143,7 +176,6 @@ Renders template `employer_filter.html` (Checkbox-Liste aller verfügbaren Skill
 
 <img width="1049" height="853" alt="image" src="https://github.com/user-attachments/assets/8f3d4865-9e50-4b7c-85a0-939f2a003113" />
 
-
 ---
 
 ### `employer_swipe()`
@@ -179,6 +211,36 @@ Renders template `employer_filter.html` (Checkbox-Liste aller verfügbaren Skill
 **Sample output:**
 Redirects to `/employer/swipe` (lädt den nächsten Kandidaten).
 
+### `employer_profile()`
+
+**Route:** `/employer/profile`
+
+**Methods:** `GET` `POST`
+
+**Purpose:** Dashboard für Arbeitgeber.
+* **GET:** Lädt bestehende Firmendaten (Name, Standort, Beschreibung) in das Formular.
+* **POST:** Aktualisiert die Firmendaten in der Datenbanktabelle `Employer`.
+
+**Sample output:**
+Renders template `employer_profile.html`.
+<img width="1060" height="851" alt="image" src="https://github.com/user-attachments/assets/7cbbeb6a-f9b3-4965-ada0-4c636eee8643" />
+
+
+---
+
+### `employer_matches()`
+
+**Route:** `/employer/matches`
+
+**Methods:** `GET`
+
+**Purpose:** Zeigt eine Liste aller Studenten an, die der Arbeitgeber eingeladen hat. Die Abfrage verknüpft die `interviews`-Tabelle mit der `Student`-Tabelle, um Namen und Kontaktinfos anzuzeigen.
+
+**Sample output:**
+Renders template `employer_matches.html`.
+<img width="1059" height="847" alt="image" src="https://github.com/user-attachments/assets/5cf95971-cd75-408f-a70f-1407a75b35fa" />
+
+
 ---
 
 ## Debugging Tools
@@ -193,3 +255,16 @@ Redirects to `/employer/swipe` (lädt den nächsten Kandidaten).
 
 **Sample output:**
 Flash Message: "Swipe-Historie zurückgesetzt."
+
+### `debug_interviews()`
+
+**Route:** `/debug/interviews`
+
+**Methods:** `GET`
+
+**Purpose:** Gibt eine rohe Liste aller Einträge in der `interviews`-Tabelle zurück. Dient nur Entwicklungszwecken zur schnellen Überprüfung der Datenbank.
+
+**Sample output:**
+
+<img width="1062" height="271" alt="image" src="https://github.com/user-attachments/assets/722f8dc0-2cc4-48b9-a2c6-02e8870f84af" />
+
