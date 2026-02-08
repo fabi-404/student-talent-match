@@ -149,10 +149,6 @@ einfach zu lange gedauert.
 aber mit der Freiheit, es genau so aussehen zu lassen, wie wir wollen.*
 ---
 
-Ja, absolut. Wenn man sich den Code in der `app.py` (speziell die Route `/employer/swipe`) ansieht, fällt eine fundamentale Logik-Entscheidung auf, die massiven Einfluss auf die User Experience (UX) hat: **Wie streng filtert der Algorithmus?**
-
-Hier ist ein Vorschlag für eine dritte Design-Decision, die sich auf die **Such-Logik** bezieht. Das ist oft ein kritischer Punkt bei MVPs (Minimum Viable Products), da man mit wenigen Daten startet.
-
 ---
 
 ## 03: Filter-Strategie (Soft-Matching vs. Hard-Matching)
@@ -199,29 +195,41 @@ Das bedeutet: Wählt ein Arbeitgeber 5 Skills aus, erweitern wir den Suchradius,
 *Wir haben uns hier bewusst für die **Vermeidung von leeren Ergebnislisten** entschieden, um die Interaktion auf der Plattform in der frühen Phase am Laufen zu halten.*
 
 
-04: Algorithmus zur Kandidaten-Auswahl (Zufall vs. Relevanz-Score)
-Status : entschieden
 
-Updated : 08-02-2026
+## 04: Algorithmus zur Kandidaten-Auswahl (Zufall vs. Relevanz-Score)
 
-Problem statement
-Nachdem ein Arbeitgeber Filter gesetzt hat (z. B. "Java" und "SQL"), bleibt oft eine Liste von mehreren potenziellen Kandidaten übrig. Die Frage war: In welcher Reihenfolge zeigen wir diese Profile an?
+**Status**
+: **entschieden**
 
-In vielen Recruiting-Plattformen gibt es komplexe "Relevanz-Scores" (z. B. "95% Match"), die Kandidaten nach der Anzahl der Treffer sortieren. Da wir jedoch ein "Swipe"-Interface nutzen (immer nur ein Profil gleichzeitig sichtbar), hat die Reihenfolge einen enormen Einfluss darauf, ob ein Kandidat überhaupt gesehen wird.
+**Updated**
+: 08-02-2026
 
-Decision
-Wir haben uns für eine rein zufällige Sortierung (ORDER BY RANDOM()) entschieden.
+### Problem statement
 
-Im Code (app.py) wird dies so umgesetzt:
+Nachdem ein Arbeitgeber Filter gesetzt hat (z. B. "Java" und "SQL"), bleibt oft eine Liste von mehreren potenziellen Kandidaten übrig. Die Frage war: **In welcher Reihenfolge** zeigen wir diese Profile an?
 
-Python
+In vielen Recruiting-Plattformen gibt es komplexe "Relevanz-Scores" (z. B. "95% Match"), die Kandidaten nach der Anzahl der Treffer sortieren. Da wir jedoch ein "Swipe"-Interface nutzen (immer nur *ein* Profil gleichzeitig sichtbar), hat die Reihenfolge einen enormen Einfluss darauf, ob ein Kandidat überhaupt gesehen wird.
+
+### Decision
+
+Wir haben uns für eine rein **zufällige Sortierung (`ORDER BY RANDOM()`)** entschieden.
+
+Im Code (`app.py`) wird dies so umgesetzt:
+
+```python
 query += " ORDER BY RANDOM() LIMIT 1"
+
+```
+
 Anstatt zu versuchen, den "perfekten" Kandidaten mathematisch zu berechnen, würfeln wir die Ergebnisse bei jedem Aufruf neu. Das verhindert, dass immer dieselben "Top-Performer" als Erstes erscheinen und gewährleistet eine faire Verteilung der Sichtbarkeit für alle Studenten, die die Grundkriterien erfüllen.
 
-Regarded options
-Kriterium	Zufalls-Prinzip (Gewählt)	Relevanz-Score (Verworfen)
-Fairness	✅ Hoch: Jeder Student hat die gleiche Chance, gesehen zu werden.	⚠️ Mittel: "Schwächere" Profile landen immer ganz hinten und werden nie geswiped.
-Implementierung	✅ Trivial: Standard SQL-Funktion.	❌ Komplex: Erfordert Algorithmus, der Treffer gewichtet und sortiert.
-User Experience	✅ Abwechslungsreich: Der Arbeitgeber sieht bei jedem Login neue Gesichter.	⚠️ Statisch: Die Liste sieht immer gleich aus, bis die Top-Kandidaten bearbeitet sind.
-Performance	⚠️ Mittel: ORDER BY RANDOM() kann bei riesigen Datenmengen langsam sein (für unser MVP aber vernachlässigbar).	✅ Hoch: Indexierte Sortierung ist schneller.
-Wir haben uns hier gegen einen elitären Ansatz entschieden. In einem MVP ist es wichtiger, Entdeckungen zu fördern ("Serendipity"), als eine pseudo-genaue Passgenauigkeit vorzugaukeln. Dafür haben wir den Match Score an anderer Stelle verwendet damit der Arbeitgeber direkt auf einen Blick sieht wie viel Prozent der Skills erfüllt sind. 
+### Regarded options
+
+| Kriterium | Zufalls-Prinzip (Gewählt) | Relevanz-Score (Verworfen) |
+| --- | --- | --- |
+| **Fairness** | ✅ **Hoch**: Jeder Student hat die gleiche Chance, gesehen zu werden. | ⚠️ **Mittel**: "Schwächere" Profile landen immer ganz hinten und werden nie geswiped. |
+| **Implementierung** | ✅ **Trivial**: Standard SQL-Funktion. | ❌ **Komplex**: Erfordert Algorithmus, der Treffer gewichtet und sortiert. |
+| **User Experience** | ✅ **Abwechslungsreich**: Der Arbeitgeber sieht bei jedem Login neue Gesichter. | ⚠️ **Statisch**: Die Liste sieht immer gleich aus, bis die Top-Kandidaten bearbeitet sind. |
+| **Performance** | ⚠️ **Mittel**: `ORDER BY RANDOM()` kann bei riesigen Datenmengen langsam sein (für unser MVP aber vernachlässigbar). | ✅ **Hoch**: Indexierte Sortierung ist schneller. |
+
+*Wir haben uns hier gegen einen elitären Ansatz entschieden. In einem MVP ist es wichtiger, Entdeckungen zu fördern ("Serendipity"), als eine pseudo-genaue Passgenauigkeit vorzugaukeln. Dafür haben wir den Match Score an anderer Stelle verwendet um dem Arbeitgeber direkt anzuzeigen wie viel Prozent der Skills erfüllt sind*
