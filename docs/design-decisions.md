@@ -148,3 +148,52 @@ einfach zu lange gedauert.
 *Tailwind CSS war für uns der "Sweetspot": Die Geschwindigkeit eines Frameworks,
 aber mit der Freiheit, es genau so aussehen zu lassen, wie wir wollen.*
 ---
+
+Ja, absolut. Wenn man sich den Code in der `app.py` (speziell die Route `/employer/swipe`) ansieht, fällt eine fundamentale Logik-Entscheidung auf, die massiven Einfluss auf die User Experience (UX) hat: **Wie streng filtert der Algorithmus?**
+
+Hier ist ein Vorschlag für eine dritte Design-Decision, die sich auf die **Such-Logik** bezieht. Das ist oft ein kritischer Punkt bei MVPs (Minimum Viable Products), da man mit wenigen Daten startet.
+
+---
+
+## 04: Filter-Strategie (Soft-Matching vs. Hard-Matching)
+
+**Status**
+: **entschieden**
+
+**Updated**
+: 08-02-2026
+
+### Problem statement
+
+Ein Arbeitgeber wählt im Filter-Dashboard oft mehrere gewünschte Fähigkeiten gleichzeitig aus (z. B. "Python" und "SQL" und "Englisch").
+
+Wir mussten definieren, wie die Datenbank diese Anfrage interpretiert:
+
+1. **Strict/Hard Matching (AND):** Zeige nur Studenten, die **alle** gewählten Skills besitzen.
+2. **Soft Matching (OR):** Zeige alle Studenten, die **mindestens einen** der gewählten Skills besitzen.
+
+Das Problem: In der Startphase der App (wenig Nutzerdaten) führt eine strikte "AND"-Logik sehr schnell zu "0 Treffern", was für den Arbeitgeber frustrierend ist ("Die App funktioniert nicht").
+
+### Decision
+
+Wir haben uns für das **Soft-Matching (OR-Logik)** entschieden.
+
+Im Backend setzen wir dies durch eine SQL `IN`-Abfrage um:
+
+```python
+query += f" AND s.id IN (SELECT student_id FROM Student_Skill WHERE skill_id IN ({placeholders}))"
+
+```
+
+Das bedeutet: Wählt ein Arbeitgeber 5 Skills aus, erweitern wir den Suchradius, statt ihn zu verengen. Wir priorisieren, dass der Arbeitgeber *überhaupt* Kandidaten sieht (Quantität), auch wenn diese vielleicht nur 50% der Anforderungen erfüllen. Das passt besser zu unserem "Swipe"-Ansatz, der auf schnelle visuelle Bewertung setzt, anstatt auf eine präzise Datenbank-Abfrage wie bei klassischen Jobportalen.
+
+### Regarded options
+
+| Kriterium | Soft-Matching / OR (Gewählt) | Hard-Matching / AND (Alternative) |
+| --- | --- | --- |
+| **Ergebnis-Menge** | ✅ **Hoch**: Der User bekommt fast immer Profile zum Swipen angezeigt. | ❌ **Niedrig**: Hohes Risiko für "Leere Ergebnisse" (Zero Results), besonders bei vielen ausgewählten Filtern. |
+| **Relevanz** | ⚠️ **Mittel**: Es tauchen auch Kandidaten auf, die nur 1 von 5 Kriterien erfüllen. | ✅ **Hoch**: Die Kandidaten passen perfekt auf das Profil. |
+| **SQL-Komplexität** | ✅ **Gering**: Einfaches `WHERE id IN (...)`. | ⚠️ **Mittel**: Erfordert komplexere Aggregation (`GROUP BY ... HAVING COUNT = X`). |
+| **User Experience** | ✅ **Flüssig**: Der "Swipe-Flow" bricht nicht ab. | ❌ **Stockend**: User muss ständig Filter lockern, um Ergebnisse zu sehen. |
+
+*Wir haben uns hier bewusst für die **Vermeidung von leeren Ergebnislisten** entschieden, um die Interaktion auf der Plattform in der frühen Phase am Laufen zu halten.*
